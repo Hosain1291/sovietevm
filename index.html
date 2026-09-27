@@ -709,10 +709,29 @@
           hy: 'Փոխնահանգապետ', tk: 'Wise-Gubernator', et: 'Asekuberner', ko: '부지사'
         }
       },
+      sov_rep: {
+        id: 'sov_rep',
+        digits: 5,
+        hasVice: false,
+        isRepublicSpecific: true,
+        shortTabs: {
+          ru: 'В.С. Респуб.', uk: 'В.Р. Респуб.', be: 'В.С. Рэспуб.', uz: 'Resp. Oliy Sovet',
+          kk: 'Респ. Жоғ. Кеңес', ka: 'რესპ. უმაღლ. საბჭო', az: 'Resp. Ali Sovet', lt: 'Resp. Aukšč. Taryba',
+          ro: 'Sov. Sup. Rep.', lv: 'Resp. Augst. Pad.', ky: 'Респ. Жог. Кеңеш', tg: 'Шӯрои Олии Ҷумҳ.',
+          hy: 'Հանրապ. Գեր. Խորհ.', tk: 'Resp. Ýokary Sowet', et: 'Vabariigi Ülemn.', ko: '공화국대의원'
+        },
+        names: {
+          ru: 'Депутат Верховного Совета Республики', uk: 'Депутат Верховної Ради Республіки', be: 'Дэпутат Вярхоўнага Савета Рэспублікі', uz: 'Respublika Oliy Soveti Deputati',
+          kk: 'Республикалық Жоғарғы Кеңес Депутаты', ka: 'რესპუბლიკის უმაღლესი საბჭოს დეპუტატი', az: 'Respublika Ali Soveti Deputatı', lt: 'Respublikos Aukščiausiosios Tarybos Deputatas',
+          ro: 'Deputat în Sovietul Suprem al Republicii', lv: 'Republikas Augstākās Padomes Deputāts', ky: 'Республикалык Жогорку Кеңештин Депутаты', tg: 'Вакили Шӯрои Олии Ҷумҳурӣ',
+          hy: 'Հանրապետության Գերագույն Խորհրդի Պատգամավոր', tk: 'Respublikanyň Ýokary Sowetiň Deputaty', et: 'Vabariigi Ülemnõukogu Saadik', ko: '공화국 최고소비에트 대의원'
+        }
+      },
       pres_rep: {
         id: 'pres_rep',
         digits: 2,
         hasVice: true,
+        isRepublicSpecific: true,
         shortTabs: {
           ru: 'През. Респуб.', uk: 'През. Респуб.', be: 'Прэз. Рэспуб.', uz: 'Respublika Prez.',
           kk: 'Респ. Президенті', ka: 'რესპ. პრეზიდ.', az: 'Resp. Prezidenti', lt: 'Resp. Prezidentas',
@@ -774,9 +793,9 @@
       }
     };
 
-    const SOVIET_SEQUENCE = ['sov_loc', 'gov_reg', 'pres_rep', 'sov_sup', 'pres_fed'];
+    const SOVIET_SEQUENCE = ['sov_loc', 'gov_reg', 'sov_rep', 'pres_rep', 'sov_sup', 'pres_fed'];
 
-    // 기본 후보 데이터베이스 (공화국 대통령 pres_rep는 15개 공화국별 독립 오브젝트로 분리)
+    // 기본 후보 데이터베이스 (공화국 최고소비에트 sov_rep 및 공화국 대통령 pres_rep는 15개 공화국별 독립 오브젝트로 분리)
     let CANDIDATES_DB = {
       sov_loc: {
         '10001': { name: 'Mikhail Romanov', party: 'PSD (사회민주당)', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80' },
@@ -786,6 +805,20 @@
       gov_reg: {
         '120': { name: 'Svetlana Kuznetsova', party: 'PSM (민주사회당)', vice: 'Igor Sokolov', avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=300&q=80' },
         '250': { name: 'Daulet Smagulov', party: 'UFC (연방시민동맹)', vice: 'Arthur Mendes', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80' }
+      },
+      sov_rep: {
+        kk: {
+          '51001': { name: 'Batyrkhan Shukenov Jr.', party: 'K-PSD (카자흐 사회민주당)', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80' },
+          '52002': { name: 'Gulnara Karimova', party: 'Alash-PTR (인민노동당)', avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=300&q=80' }
+        },
+        ru: {
+          '51001': { name: 'Dmitry Volkov', party: 'PSD (러시아 사회민주당)', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80' },
+          '52002': { name: 'Anna Semyonova', party: 'PLP (진보자유당)', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80' }
+        },
+        uk: {
+          '51001': { name: 'Taras Shevchenko Jr.', party: 'U-RADA (우크라이나 연합)', avatar: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=300&q=80' },
+          '52002': { name: 'Oksana Petrenko', party: 'PTR (인민노동당)', avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=300&q=80' }
+        }
       },
       pres_rep: {
         kk: {
@@ -819,6 +852,13 @@
           '22': { name: `후보 2 [${SOVIET_REPUBLICS[code].short}]`, party: 'PTR (인민노동당)', vice: '러닝메이트' }
         };
       }
+      if (!CANDIDATES_DB.sov_rep) CANDIDATES_DB.sov_rep = {};
+      if (!CANDIDATES_DB.sov_rep[code]) {
+        CANDIDATES_DB.sov_rep[code] = {
+          '51001': { name: `공화국의원 1 [${SOVIET_REPUBLICS[code].short}]`, party: 'PSD (사회민주당)' },
+          '52002': { name: `공화국의원 2 [${SOVIET_REPUBLICS[code].short}]`, party: 'PTR (인민노동당)' }
+        };
+      }
     });
 
     let currentSovietLang = 'kk'; // 카자흐어 기본
@@ -828,6 +868,7 @@
     let enabledRoles = {
       sov_loc: true,
       gov_reg: true,
+      sov_rep: true,
       pres_rep: true,
       sov_sup: true,
       pres_fed: true
@@ -851,7 +892,7 @@
     function initResults() {
       ELECTION_RESULTS = {};
       SOVIET_SEQUENCE.forEach(r => {
-        if (r === 'pres_rep') {
+        if (SOVIET_ROLES[r].isRepublicSpecific) {
           ELECTION_RESULTS[r] = {};
           Object.keys(SOVIET_REPUBLICS).forEach(rep => {
             ELECTION_RESULTS[r][rep] = { votes: {}, branco: 0, nulo: 0, total: 0 };
@@ -864,11 +905,12 @@
     initResults();
 
     function getActiveResultObject(roleKey) {
-      if (roleKey === 'pres_rep') {
-        if (!ELECTION_RESULTS.pres_rep[currentRepublicCode]) {
-          ELECTION_RESULTS.pres_rep[currentRepublicCode] = { votes: {}, branco: 0, nulo: 0, total: 0 };
+      if (SOVIET_ROLES[roleKey]?.isRepublicSpecific) {
+        if (!ELECTION_RESULTS[roleKey]) ELECTION_RESULTS[roleKey] = {};
+        if (!ELECTION_RESULTS[roleKey][currentRepublicCode]) {
+          ELECTION_RESULTS[roleKey][currentRepublicCode] = { votes: {}, branco: 0, nulo: 0, total: 0 };
         }
-        return ELECTION_RESULTS.pres_rep[currentRepublicCode];
+        return ELECTION_RESULTS[roleKey][currentRepublicCode];
       }
       if (!ELECTION_RESULTS[roleKey]) {
         ELECTION_RESULTS[roleKey] = { votes: {}, branco: 0, nulo: 0, total: 0 };
@@ -877,11 +919,12 @@
     }
 
     function getActiveCandidatesMap(roleKey) {
-      if (roleKey === 'pres_rep') {
-        if (!CANDIDATES_DB.pres_rep[currentRepublicCode]) {
-          CANDIDATES_DB.pres_rep[currentRepublicCode] = {};
+      if (SOVIET_ROLES[roleKey]?.isRepublicSpecific) {
+        if (!CANDIDATES_DB[roleKey]) CANDIDATES_DB[roleKey] = {};
+        if (!CANDIDATES_DB[roleKey][currentRepublicCode]) {
+          CANDIDATES_DB[roleKey][currentRepublicCode] = {};
         }
-        return CANDIDATES_DB.pres_rep[currentRepublicCode];
+        return CANDIDATES_DB[roleKey][currentRepublicCode];
       }
       if (!CANDIDATES_DB[roleKey]) {
         CANDIDATES_DB[roleKey] = {};
@@ -995,7 +1038,7 @@
         const isChecked = !!enabledRoles[rKey];
         const rObj = SOVIET_ROLES[rKey];
         const rName = (rObj.names && rObj.names[currentSovietLang]) ? rObj.names[currentSovietLang] : (rObj.names?.ru || rObj.id);
-        const repLabel = (rKey === 'pres_rep') ? ` [${SOVIET_REPUBLICS[currentRepublicCode]?.short || ''}]` : '';
+        const repLabel = rObj.isRepublicSpecific ? ` [${SOVIET_REPUBLICS[currentRepublicCode]?.short || ''}]` : '';
 
         return `
           <label class="flex items-center justify-between px-2.5 py-1.5 bg-white hover:bg-stone-100 rounded-lg border ${isChecked ? 'border-stone-300 shadow-xs' : 'border-dashed border-stone-200 opacity-60'} cursor-pointer select-none text-[11px] transition">
@@ -1099,7 +1142,7 @@
       `;
 
       let roleDisplayName = (role.names && role.names[currentSovietLang]) ? role.names[currentSovietLang] : (role.names?.ru || role.id);
-      if (currentRoleKey === 'pres_rep') {
+      if (role.isRepublicSpecific) {
         roleDisplayName += ` [${SOVIET_REPUBLICS[currentRepublicCode]?.short || ''}]`;
       }
       const viceLabel = (role.viceLabels && role.viceLabels[currentSovietLang]) ? role.viceLabels[currentSovietLang] : (role.viceLabels?.ru || 'Вице');
@@ -1246,7 +1289,7 @@
       select.innerHTML = activeSequence.map((rKey, idx) => {
         const rObj = SOVIET_ROLES[rKey];
         const rName = (rObj.names && rObj.names[currentSovietLang]) ? rObj.names[currentSovietLang] : (rObj.names?.ru || rObj.id);
-        const repSuffix = (rKey === 'pres_rep') ? ` [${SOVIET_REPUBLICS[currentRepublicCode]?.short || ''}]` : '';
+        const repSuffix = rObj.isRepublicSpecific ? ` [${SOVIET_REPUBLICS[currentRepublicCode]?.short || ''}]` : '';
         return `<option value="${rKey}">${idx + 1}. ${rName}${repSuffix} (${rObj.digits}자리)</option>`;
       }).join('');
 
@@ -1283,7 +1326,7 @@
       candNumInput.placeholder = `${role.digits}자리`;
 
       const repWrap = document.getElementById('republicSelectWrap');
-      if (currentRoleKey === 'pres_rep') {
+      if (role.isRepublicSpecific) {
         repWrap.classList.remove('hidden');
       } else {
         repWrap.classList.add('hidden');
@@ -1692,7 +1735,7 @@
               if (parsed.results) {
                 ELECTION_RESULTS = parsed.results;
                 Object.keys(ELECTION_RESULTS).forEach(k => {
-                  if (k === 'pres_rep') {
+                  if (SOVIET_ROLES[k]?.isRepublicSpecific) {
                     Object.keys(ELECTION_RESULTS[k] || {}).forEach(rep => {
                       loadedResultsCount += ELECTION_RESULTS[k][rep].total || 0;
                     });
@@ -1743,7 +1786,7 @@
         const res = getActiveResultObject(rKey);
         const cands = getActiveCandidatesMap(rKey);
         let rName = (role.names && role.names[currentSovietLang]) ? role.names[currentSovietLang] : (role.names?.ru || rKey);
-        if (rKey === 'pres_rep') {
+        if (role.isRepublicSpecific) {
           rName += ` [${SOVIET_REPUBLICS[currentRepublicCode]?.name || ''}]`;
         }
 
