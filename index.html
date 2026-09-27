@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ЭВМ-2026 - 소비에트 연방 전자투표기 시뮬레이터</title>
+  <title>소비에트 연방 전자투표기 시뮬레이터 (ЭВМ-2026)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=JetBrains+Mono:wght@400;600;800&family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+KR:wght@400;500;700;900&family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;0,900;1,400&family=Inter:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
   
   <style>
     body {
@@ -15,43 +15,20 @@
     }
     
     .font-soviet-screen {
-      font-family: 'Roboto Condensed', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-family: 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
       -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
-    .font-soviet-tech {
-      font-family: 'Share Tech Mono', 'JetBrains Mono', monospace;
+    .font-mono-hardware {
+      font-family: 'Share Tech Mono', monospace, monospace;
     }
 
-    /* 하드웨어 본체: 소련 산업 전자공학 스타일 (빈티지 웜 그레이/올리브 샌드 섀시) */
-    .soviet-machine-body {
-      background: radial-gradient(circle at 40% 20%, #e2e4dc 0%, #cbd0c3 60%, #b4baa8 100%);
-      box-shadow: 
-        0 24px 48px -8px rgba(28, 35, 26, 0.4),
-        0 6px 12px -2px rgba(28, 35, 26, 0.25),
-        inset 0 1px 3px rgba(255, 255, 255, 0.9),
-        inset 0 -4px 8px rgba(50, 58, 44, 0.25);
-      border: 2px solid #9aa18c;
+    /* 투표기 화면 기본 120% 스케일 */
+    #urnaScreen {
+      --screen-scale: 1.2;
+      font-size: calc(1rem * var(--screen-scale));
     }
-
-    /* 스크린 베젤: 견고한 다크 차콜 앤트러사이트 질감 */
-    .soviet-screen-frame {
-      background: linear-gradient(175deg, #1e2220 0%, #131614 100%);
-      box-shadow: 
-        inset 0 3px 8px rgba(0,0,0,0.85),
-        0 1px 2px rgba(255,255,255,0.7),
-        0 0 0 2px #2f342f;
-    }
-
-    /* 고대비 일렉트로닉 LCD 화면: 은은한 앰버-페일 웜 백라이트 */
-    .soviet-lcd {
-      background: #edf0ea;
-      box-shadow: 
-        inset 1px 1px 6px rgba(0, 0, 0, 0.22),
-        inset 0 0 16px rgba(180, 195, 175, 0.25);
-      --screen-scale: 1.15;
-    }
-
     .scale-text-xs { font-size: calc(0.75rem * var(--screen-scale)); }
     .scale-text-sm { font-size: calc(0.875rem * var(--screen-scale)); }
     .scale-text-base { font-size: calc(1rem * var(--screen-scale)); }
@@ -59,12 +36,11 @@
     .scale-text-xl { font-size: calc(1.25rem * var(--screen-scale)); }
     .scale-text-2xl { font-size: calc(1.5rem * var(--screen-scale)); }
     .scale-text-3xl { font-size: calc(1.875rem * var(--screen-scale)); }
-    .scale-text-fim { font-size: calc(4.25rem * var(--screen-scale)); }
-
-    /* 점멸 애니메이션 */
+    .scale-text-fim { font-size: calc(4.75rem * var(--screen-scale)); }
+    
     @keyframes blinkCursor {
-      0%, 49% { border-color: #1a2218; background-color: rgba(26, 34, 24, 0.08); }
-      50%, 100% { border-color: #7b8874; background-color: transparent; }
+      0%, 49% { border-color: #111; }
+      50%, 100% { border-color: transparent; }
     }
     .cursor-active {
       animation: blinkCursor 0.85s infinite;
@@ -78,64 +54,90 @@
       animation: blinkText 0.85s infinite;
     }
 
-    /* 소련 특유의 산업용 메탈/베이클라이트 버튼 스타일 */
-    .key-soviet-num {
-      background: linear-gradient(180deg, #373e35 0%, #222621 100%);
-      box-shadow: 0 4px 0 #111410, 0 5px 6px rgba(0,0,0,0.35), inset 0 1px 1px rgba(255,255,255,0.22);
-      transition: all 0.05s ease;
-      color: #f0f3eb;
+    /* 소비에트 산업용 전자투표기 본체 (올리브-샌드 베이지 하드웨어 질감) */
+    .soviet-body {
+      background: linear-gradient(172deg, #eae8e1 0%, #ded9ce 45%, #cfc9bd 100%);
+      box-shadow: 
+        0 24px 48px -12px rgba(28, 32, 28, 0.4),
+        0 6px 12px -3px rgba(0, 0, 0, 0.18),
+        inset 0 1.5px 2px rgba(255, 255, 255, 0.95),
+        inset 0 -3px 8px rgba(45, 48, 42, 0.2);
     }
-    .key-soviet-num:active, .key-pressed {
+    .soviet-screen-bezel {
+      background: #1b201a;
+      box-shadow: inset 0 3px 8px rgba(0,0,0,0.95), 0 1px 2px rgba(255,255,255,0.7);
+    }
+    .soviet-lcd {
+      background: #d8dec8;
+      box-shadow: inset 2px 2px 6px rgba(25, 35, 25, 0.28);
+    }
+
+    /* 소비에트 산업용 키패드 */
+    .key-num {
+      background: linear-gradient(to bottom, #2d332d, #191c19);
+      box-shadow: 0 4px 0 #0d100d, 0 5px 6px rgba(0,0,0,0.4), inset 0 1px 1px rgba(255,255,255,0.22);
+      transition: all 0.05s ease;
+    }
+    .key-num:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #0d100d, 0 2px 3px rgba(0,0,0,0.3);
+    }
+    .key-pressed {
       transform: translateY(3px) !important;
-      box-shadow: 0 1px 0 #111410, 0 2px 3px rgba(0,0,0,0.3) !important;
+      box-shadow: 0 1px 0 #0d100d, 0 2px 3px rgba(0,0,0,0.3) !important;
       filter: brightness(1.25);
     }
-
-    /* 백지(ЧИСТ / БЕЛЫЙ) 키: 본 화이트/베이지 */
-    .key-soviet-white {
-      background: linear-gradient(180deg, #f7f9f3 0%, #e2e6dc 100%);
-      box-shadow: 0 4px 0 #a2a89a, 0 5px 6px rgba(0,0,0,0.2), inset 0 1px 1px #fff;
-      color: #1d231b;
-      transition: all 0.05s ease;
-    }
-    .key-soviet-white:active {
-      transform: translateY(3px);
-      box-shadow: 0 1px 0 #8c9383, 0 2px 3px rgba(0,0,0,0.2);
-    }
-
-    /* 정정(СБРОС) 키: 소련 공학 앰버-오렌지 */
-    .key-soviet-orange {
-      background: linear-gradient(180deg, #df5b2a 0%, #ba3f14 100%);
-      box-shadow: 0 4px 0 #7b2709, 0 5px 6px rgba(0,0,0,0.35), inset 0 1px 1px rgba(255,255,255,0.35);
-      color: #ffffff;
-      transition: all 0.05s ease;
-    }
-    .key-soviet-orange:active {
-      transform: translateY(3px);
-      box-shadow: 0 1px 0 #5c1b05, 0 2px 3px rgba(0,0,0,0.3);
-    }
-
-    /* 확인(ВВОД / ПОДТВ) 키: 딥 포레스트 그린 */
-    .key-soviet-green {
-      background: linear-gradient(180deg, #2e7d47 0%, #1e5831 100%);
-      box-shadow: 0 5px 0 #10341c, 0 6px 8px rgba(0,0,0,0.4), inset 0 1px 1px rgba(255,255,255,0.35);
-      color: #ffffff;
-      transition: all 0.05s ease;
-    }
-    .key-soviet-green:active {
-      transform: translateY(4px);
-      box-shadow: 0 1px 0 #0b2212, 0 2px 3px rgba(0,0,0,0.35);
-    }
-
     .key-pressed-action {
       transform: translateY(3px) !important;
-      filter: brightness(1.2);
+      filter: brightness(1.15);
     }
 
-    /* 점자 닷 */
+    /* 백지(ЧИСТ) 키 - 아이보리 */
+    .key-white {
+      background: linear-gradient(to bottom, #fcfbf7, #ebe7dc);
+      box-shadow: 0 4px 0 #b3ad9f, 0 5px 6px rgba(0,0,0,0.25), inset 0 1px 1px #fff;
+      color: #1a1e19;
+      transition: all 0.05s ease;
+    }
+    .key-white:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #948e81, 0 2px 3px rgba(0,0,0,0.2);
+    }
+
+    /* 정정(СБРОС) 키 - 앰버 오렌지 */
+    .key-orange {
+      background: linear-gradient(to bottom, #d9531e, #b83d0d);
+      box-shadow: 0 4px 0 #7a2605, 0 5px 6px rgba(0,0,0,0.35), inset 0 1px 1px rgba(255,255,255,0.35);
+      color: #fff;
+      transition: all 0.05s ease;
+    }
+    .key-orange:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #5c1c04, 0 2px 3px rgba(0,0,0,0.3);
+    }
+
+    /* 확인(ВВОД) 키 - 소비에트 포레스트 그린 */
+    .key-green {
+      background: linear-gradient(to bottom, #2b7a3e, #1a5c2b);
+      box-shadow: 0 5px 0 #0e3d1b, 0 6px 8px rgba(0,0,0,0.45), inset 0 1px 1px rgba(255,255,255,0.35);
+      color: #fff;
+      transition: all 0.05s ease;
+    }
+    .key-green:active {
+      transform: translateY(4px);
+      box-shadow: 0 1px 0 #092611, 0 2px 3px rgba(0,0,0,0.35);
+    }
+
+    .dropzone-active {
+      border-color: #059669 !important;
+      background-color: #ecfdf5 !important;
+      transform: scale(1.02);
+      transition: all 0.15s ease;
+    }
+
     .braille-dot {
-      width: 3.5px;
-      height: 3.5px;
+      width: 3px;
+      height: 3px;
       background-color: rgba(255, 255, 255, 0.45);
       border-radius: 50%;
       display: inline-block;
@@ -145,59 +147,49 @@
       background-color: rgba(0, 0, 0, 0.45);
     }
 
-    /* 공학 금속 명판(Placard) */
-    .soviet-placard {
-      background: linear-gradient(145deg, #d3d8cc 0%, #b8bfb0 100%);
-      border: 1.5px solid #8e9684;
-      box-shadow: inset 1px 1px 2px rgba(255,255,255,0.7), 0 2px 4px rgba(0,0,0,0.15);
+    .engraved-metal-plate {
+      background: linear-gradient(135deg, #d3cec4 0%, #c4bdae 100%);
+      border: 1.5px solid #a89f8e;
+      box-shadow: inset 1px 1px 2px rgba(255,255,255,0.8), 0 1px 2px rgba(0,0,0,0.25);
     }
-    .placard-text {
-      color: #384033;
-      text-shadow: 0.5px 0.5px 0 rgba(255,255,255,0.6);
+    .engraved-text {
+      color: #555047;
+      text-shadow: 1px 1px 0.5px rgba(255,255,255,0.8), -0.5px -0.5px 0.5px rgba(0,0,0,0.35);
     }
 
-    /* 드래그존 */
-    .dropzone-active {
-      border-color: #15803d !important;
-      background-color: #f0fdf4 !important;
-      transform: scale(1.02);
-      transition: all 0.15s ease;
-    }
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: #e2dfd7; }
+    ::-webkit-scrollbar-thumb { background: #b5afa3; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #969085; }
   </style>
 </head>
-<body class="bg-stone-300 text-stone-800 min-h-screen p-3 sm:p-6 flex flex-col items-center justify-between">
+<body class="bg-[#d5d2c9] text-stone-900 min-h-screen p-3 sm:p-5 flex flex-col items-center justify-between">
 
-  <div class="w-full max-w-6xl flex flex-col lg:flex-row items-start justify-center gap-6">
+  <div class="w-full max-w-6xl flex flex-col lg:flex-row items-start justify-center gap-6 mb-6">
 
-    <!-- ================= 1. 소비에트 연방 전자투표기 하드웨어 (ЭВМ-2026) ================= -->
-    <main class="soviet-machine-body w-full max-w-[540px] rounded-[28px] p-4 sm:p-6 relative flex flex-col mx-auto shrink-0 select-none shadow-2xl">
+    <!-- 1. 소비에트 연방 전자투표기 본체 (ЭВМ-2026) -->
+    <main class="soviet-body w-full max-w-[530px] rounded-[26px] p-4 sm:p-6 border border-[#c4beaf] relative flex flex-col mx-auto shrink-0 select-none shadow-2xl">
       
-      <!-- 상단 리벳 & 공식 헤더 텍스트 -->
-      <div class="flex justify-between items-center px-2 mb-2.5">
-        <div class="flex items-center gap-1.5 opacity-60">
-          <div class="w-2 h-2 rounded-full bg-stone-700 shadow-inner"></div>
-          <div class="w-1 h-1 rounded-full bg-stone-500"></div>
-        </div>
-        <div id="machineHeaderLabel" class="text-[10px] font-mono tracking-wider text-stone-700 font-extrabold uppercase text-center">
+      <!-- 상단 리벳 & 공식 헤더 -->
+      <div class="flex justify-between items-center px-3 mb-2 opacity-70">
+        <div class="w-2 h-2 rounded-full bg-stone-500 shadow-inner border border-stone-400"></div>
+        <div id="machineHeaderLabel" class="text-[9.5px] font-mono-hardware tracking-widest text-stone-700 font-bold uppercase">
           ЦЕНТРАЛЬНАЯ ИЗБИРАТЕЛЬНАЯ КОМИССИЯ СОЮЗА
         </div>
-        <div class="flex items-center gap-1.5 opacity-60">
-          <div class="w-1 h-1 rounded-full bg-stone-500"></div>
-          <div class="w-2 h-2 rounded-full bg-stone-700 shadow-inner"></div>
-        </div>
+        <div class="w-2 h-2 rounded-full bg-stone-500 shadow-inner border border-stone-400"></div>
       </div>
 
-      <!-- 상단 스크린 베젤 & LCD 화면 영역 -->
-      <div class="soviet-screen-frame p-3 sm:p-3.5 rounded-xl flex flex-col mb-4">
-        <div id="urnaScreen" class="soviet-lcd w-full h-[330px] sm:h-[360px] rounded-md text-stone-900 flex flex-col justify-between p-2.5 font-soviet-screen relative overflow-hidden border border-stone-600/70">
+      <!-- 상단 LCD 화면 영역 -->
+      <div class="soviet-screen-bezel p-3 rounded-xl flex flex-col mb-4">
+        <div id="urnaScreen" class="soviet-lcd w-full h-[320px] sm:h-[350px] rounded text-stone-950 flex flex-col justify-between p-2 sm:p-2.5 font-soviet-screen relative overflow-hidden border border-[#525f4b] shadow-inner">
           
           <!-- 상단 선거 단계 탭 바 -->
-          <div class="w-full flex items-center justify-between border-b border-stone-400 pb-1 text-[8.5px] sm:text-[10px]">
+          <div class="w-full flex items-center justify-between border-b border-[#73826a]/60 pb-1 text-[8.5px] sm:text-[9.5px]">
             <div id="topTabsContainer" class="flex items-center gap-1 overflow-x-auto select-none pr-1">
-              <!-- JS 동적 탭 주입 -->
+              <!-- JS 동적 주입 -->
             </div>
-            <div id="screenTrainingBadge" class="text-[9.5px] sm:text-[11px] font-bold text-stone-600 tracking-wider pl-1.5 uppercase shrink-0 font-soviet-tech">
-              ОБУЧЕНИЕ
+            <div id="screenTrainingBadge" class="text-[9px] sm:text-[10px] font-bold text-stone-700 tracking-wider pl-1 uppercase shrink-0">
+              ҮЙРЕНУ
             </div>
           </div>
 
@@ -206,39 +198,35 @@
             <!-- JS 동적 렌더링 -->
           </div>
 
-          <!-- 하단 공식 조작 안내 문구 -->
-          <div id="screenFooterPrompt" class="text-[9px] sm:text-[10px] text-stone-800 border-t border-stone-400/90 pt-1 leading-snug">
+          <!-- 하단 조작 안내 문구 -->
+          <div id="screenFooterPrompt" class="text-[8.5px] sm:text-[9.5px] text-stone-900 border-t border-[#73826a]/80 pt-1 leading-snug">
             <!-- JS 동적 렌더링 -->
           </div>
 
         </div>
       </div>
 
-      <!-- 하단: 좌측 산업용 명판 + 우측 물리 키패드 -->
+      <!-- 하단: 좌측 금속 각인 명판 + 우측 물리 키패드 -->
       <div class="flex items-end justify-between gap-3 sm:gap-4 px-1 pt-1">
         
-        <!-- 좌측: 연방 중앙선거위 공식 금속 명판 (낫과 망치 없는 다당제 연방 엠블럼) -->
-        <div class="soviet-placard w-36 sm:w-44 h-32 rounded-lg p-2 flex flex-col justify-between self-end mb-1">
+        <!-- 좌측: 선관위 금속 명판 & ЭВМ-2026 각인 -->
+        <div class="engraved-metal-plate w-36 sm:w-44 h-28 sm:h-32 rounded-lg p-2.5 flex flex-col justify-between self-end mb-1">
           <div class="flex items-center gap-2">
-            <!-- 다당제 민주연방 상징 엠블럼 (중앙 별과 연방 단결의 원형 기어 모티프) -->
-            <div class="w-8 h-8 rounded-full border border-stone-600 flex items-center justify-center shrink-0 bg-stone-300/60 shadow-xs">
-              <svg class="w-6 h-6 text-stone-700" viewBox="0 0 100 100" fill="currentColor">
-                <circle cx="50" cy="50" r="44" stroke="#4a5244" stroke-width="4" fill="none" stroke-dasharray="6,3"/>
-                <path d="M50 16 L58 36 L80 36 L62 49 L69 71 L50 57 L31 71 L38 49 L20 36 L42 36 Z" fill="#4a5244"/>
-                <circle cx="50" cy="50" r="8" fill="#d3d8cc" stroke="#4a5244" stroke-width="2"/>
+            <!-- 다당제 민주연방 공화국 상징 문장 -->
+            <div class="w-8 h-8 flex items-center justify-center shrink-0">
+              <svg class="w-8 h-8 text-stone-600 opacity-80" viewBox="0 0 100 100" fill="currentColor">
+                <circle cx="50" cy="50" r="44" stroke="#555047" stroke-width="4" fill="none" stroke-dasharray="6,3"/>
+                <path d="M50 16 L58 36 L80 36 L62 49 L69 71 L50 57 L31 71 L38 49 L20 36 L42 36 Z" fill="#555047" opacity="0.85"/>
+                <circle cx="50" cy="50" r="8" fill="#3c3831"/>
               </svg>
             </div>
-            <div class="leading-tight">
-              <div class="placard-text text-[9px] sm:text-[10.5px] font-black uppercase tracking-wider">ЦЕНТРИЗБИРКОМ</div>
-              <div class="text-[7.5px] text-stone-600 font-bold uppercase tracking-tight">ФЕДЕРАЦИЯ</div>
+            <div class="leading-none">
+              <div class="engraved-text text-[9.5px] sm:text-[10.5px] font-bold uppercase tracking-wider">Центр. Избирком</div>
+              <div class="engraved-text text-[8px] sm:text-[8.5px] font-mono tracking-normal text-stone-500 mt-0.5">№ 8412-С</div>
             </div>
           </div>
-          
-          <div class="border-t border-stone-400/60 pt-1">
-            <div class="text-[8px] text-stone-600 font-mono text-center">СИСТЕМА ЭВМ-2026</div>
-            <div class="text-center font-soviet-tech text-lg sm:text-xl font-black text-stone-800 tracking-widest mt-0.5">
-              № 8412-С
-            </div>
+          <div class="text-center border-t border-[#b3ab9c] pt-1">
+            <span class="engraved-text text-xl sm:text-2xl font-black font-mono-hardware tracking-widest">ЭВМ-2026</span>
           </div>
         </div>
 
@@ -246,21 +234,21 @@
         <div class="flex-1 flex flex-col gap-2">
           <div class="grid grid-cols-4 gap-1.5 sm:gap-2">
             
-            <button class="key-soviet-num h-10 sm:h-12 rounded text-stone-100 font-mono text-xl font-bold flex flex-col items-center justify-center" data-key="1">
+            <button class="key-num h-10 sm:h-12 rounded text-white font-mono-hardware text-xl font-bold flex flex-col items-center justify-center" data-key="1">
               <span class="leading-none">1</span>
               <div class="flex gap-0.5 mt-0.5"><span class="braille-dot"></span></div>
             </button>
-            <button class="key-soviet-num h-10 sm:h-12 rounded text-stone-100 font-mono text-xl font-bold flex flex-col items-center justify-center" data-key="2">
+            <button class="key-num h-10 sm:h-12 rounded text-white font-mono-hardware text-xl font-bold flex flex-col items-center justify-center" data-key="2">
               <span class="leading-none">2</span>
               <div class="flex gap-0.5 mt-0.5"><span class="braille-dot"></span><span class="braille-dot"></span></div>
             </button>
-            <button class="key-soviet-num h-10 sm:h-12 rounded text-stone-100 font-mono text-xl font-bold flex flex-col items-center justify-center" data-key="3">
+            <button class="key-num h-10 sm:h-12 rounded text-white font-mono-hardware text-xl font-bold flex flex-col items-center justify-center" data-key="3">
               <span class="leading-none">3</span>
               <div class="flex gap-0.5 mt-0.5"><span class="braille-dot"></span><span class="braille-dot"></span><span class="braille-dot"></span></div>
             </button>
             
-            <!-- 백지 키 (ЧИСТ / БЕЛЫЙ) -->
-            <button class="key-soviet-white h-10 sm:h-12 rounded font-black text-[9px] sm:text-[10px] uppercase flex flex-col items-center justify-center leading-tight tracking-tight" data-action="BRANCO">
+            <!-- 백지 키 (ЧИСТ) -->
+            <button class="key-white h-10 sm:h-12 rounded font-bold text-[8.5px] sm:text-[9.5px] uppercase flex flex-col items-center justify-center leading-tight tracking-tight" data-action="BRANCO">
               <span>ЧИСТ</span>
               <div class="flex gap-0.5 mt-0.5">
                 <span class="braille-dot braille-dot-dark"></span>
@@ -268,21 +256,21 @@
               </div>
             </button>
 
-            <button class="key-soviet-num h-10 sm:h-12 rounded text-stone-100 font-mono text-xl font-bold flex flex-col items-center justify-center" data-key="4">
+            <button class="key-num h-10 sm:h-12 rounded text-white font-mono-hardware text-xl font-bold flex flex-col items-center justify-center" data-key="4">
               <span class="leading-none">4</span>
               <div class="flex gap-0.5 mt-0.5"><span class="braille-dot"></span><span class="braille-dot"></span></div>
             </button>
-            <button class="key-soviet-num h-10 sm:h-12 rounded text-stone-100 font-mono text-xl font-bold flex flex-col items-center justify-center" data-key="5">
+            <button class="key-num h-10 sm:h-12 rounded text-white font-mono-hardware text-xl font-bold flex flex-col items-center justify-center" data-key="5">
               <span class="leading-none">5</span>
               <div class="flex gap-0.5 mt-0.5"><span class="braille-dot"></span></div>
             </button>
-            <button class="key-soviet-num h-10 sm:h-12 rounded text-stone-100 font-mono text-xl font-bold flex flex-col items-center justify-center" data-key="6">
+            <button class="key-num h-10 sm:h-12 rounded text-white font-mono-hardware text-xl font-bold flex flex-col items-center justify-center" data-key="6">
               <span class="leading-none">6</span>
               <div class="flex gap-0.5 mt-0.5"><span class="braille-dot"></span><span class="braille-dot"></span></div>
             </button>
 
             <!-- 정정 키 (СБРОС) -->
-            <button class="key-soviet-orange h-10 sm:h-12 rounded font-black text-[9px] sm:text-[10px] uppercase flex flex-col items-center justify-center leading-tight tracking-tight" data-action="CORRIGE">
+            <button class="key-orange h-10 sm:h-12 rounded font-bold text-[8.5px] sm:text-[9.5px] uppercase flex flex-col items-center justify-center leading-tight tracking-tight" data-action="CORRIGE">
               <span>СБРОС</span>
               <div class="flex gap-0.5 mt-0.5">
                 <span class="braille-dot"></span>
@@ -290,22 +278,22 @@
               </div>
             </button>
 
-            <button class="key-soviet-num h-10 sm:h-12 rounded text-stone-100 font-mono text-xl font-bold flex flex-col items-center justify-center" data-key="7">
+            <button class="key-num h-10 sm:h-12 rounded text-white font-mono-hardware text-xl font-bold flex flex-col items-center justify-center" data-key="7">
               <span class="leading-none">7</span>
               <div class="flex gap-0.5 mt-0.5"><span class="braille-dot"></span><span class="braille-dot"></span><span class="braille-dot"></span></div>
             </button>
-            <button class="key-soviet-num h-10 sm:h-12 rounded text-stone-100 font-mono text-xl font-bold flex flex-col items-center justify-center" data-key="8">
+            <button class="key-num h-10 sm:h-12 rounded text-white font-mono-hardware text-xl font-bold flex flex-col items-center justify-center" data-key="8">
               <span class="leading-none">8</span>
               <div class="flex gap-0.5 mt-0.5"><span class="braille-dot"></span><span class="braille-dot"></span></div>
             </button>
-            <button class="key-soviet-num h-10 sm:h-12 rounded text-stone-100 font-mono text-xl font-bold flex flex-col items-center justify-center" data-key="9">
+            <button class="key-num h-10 sm:h-12 rounded text-white font-mono-hardware text-xl font-bold flex flex-col items-center justify-center" data-key="9">
               <span class="leading-none">9</span>
               <div class="flex gap-0.5 mt-0.5"><span class="braille-dot"></span></div>
             </button>
 
             <!-- 확인 키 (ВВОД) -->
-            <button class="key-soviet-green row-span-2 rounded font-black text-xs uppercase flex flex-col items-center justify-center leading-tight tracking-wider" data-action="CONFIRMA">
-              <span class="font-extrabold text-[11px] sm:text-xs">ВВОД</span>
+            <button class="key-green row-span-2 rounded font-black text-xs uppercase flex flex-col items-center justify-center leading-tight tracking-wider" data-action="CONFIRMA">
+              <span class="font-extrabold text-[12px] sm:text-[13px]">ВВОД</span>
               <div class="flex gap-0.5 mt-1">
                 <span class="braille-dot"></span>
                 <span class="braille-dot"></span>
@@ -315,7 +303,7 @@
 
             <!-- 0 키 -->
             <div class="col-start-2">
-              <button class="key-soviet-num w-full h-10 sm:h-12 rounded text-stone-100 font-mono text-xl font-bold flex flex-col items-center justify-center" data-key="0">
+              <button class="key-num w-full h-10 sm:h-12 rounded text-white font-mono-hardware text-xl font-bold flex flex-col items-center justify-center" data-key="0">
                 <span class="leading-none">0</span>
                 <div class="flex gap-0.5 mt-0.5"><span class="braille-dot"></span><span class="braille-dot"></span></div>
               </button>
@@ -326,39 +314,53 @@
 
       </div>
 
-      <!-- 하단 통풍 슬릿 및 나사 -->
-      <div class="flex justify-between items-center px-4 pt-3.5 opacity-40 pointer-events-none">
-        <span class="w-2 h-1 bg-stone-700 rounded-xs"></span>
-        <span class="w-2 h-1 bg-stone-700 rounded-xs"></span>
-        <span class="w-2 h-1 bg-stone-700 rounded-xs"></span>
-        <span class="w-2 h-1 bg-stone-700 rounded-xs"></span>
-        <span class="w-2 h-1 bg-stone-700 rounded-xs"></span>
-        <span class="w-2 h-1 bg-stone-700 rounded-xs"></span>
-        <span class="w-2 h-1 bg-stone-700 rounded-xs"></span>
+      <!-- 하단 환기 슬롯 -->
+      <div class="flex justify-between items-center px-4 pt-3 opacity-30 pointer-events-none">
+        <span class="w-1.5 h-1 bg-stone-800 rounded-xs"></span>
+        <span class="w-1.5 h-1 bg-stone-800 rounded-xs"></span>
+        <span class="w-1.5 h-1 bg-stone-800 rounded-xs"></span>
+        <span class="w-1.5 h-1 bg-stone-800 rounded-xs"></span>
+        <span class="w-1.5 h-1 bg-stone-800 rounded-xs"></span>
+        <span class="w-1.5 h-1 bg-stone-800 rounded-xs"></span>
       </div>
 
     </main>
 
-    <!-- ================= 2. 소비에트 선거 관리 패널 ================= -->
-    <aside class="w-full max-w-[440px] bg-white rounded-2xl shadow-xl p-5 sm:p-6 border border-stone-200 flex flex-col gap-4 mx-auto">
+    <!-- 2. 선거 관리 패널 -->
+    <aside class="w-full max-w-[450px] bg-white/95 rounded-2xl shadow-xl p-5 border border-stone-300 flex flex-col gap-3.5 mx-auto backdrop-blur-xs">
       
-      <div class="border-b border-stone-200 pb-2.5">
-        <div class="flex items-center justify-between">
-          <h2 class="text-xl font-black text-stone-900 tracking-tight">선거 관리 패널</h2>
-          <span class="text-[11px] font-bold px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded-full font-mono">CCCP-2026</span>
+      <div class="border-b border-stone-200 pb-2 flex items-center justify-between">
+        <div>
+          <h2 class="text-xl font-black text-stone-900 tracking-tight">선거 관리</h2>
+          <p class="text-[11px] text-stone-500">소비에트 연방 다당제 선거구 및 후보자 관리</p>
         </div>
-        <p class="text-xs text-stone-500 mt-0.5">소비에트 연방 선거구, 다언어 및 후보자 데이터 관리</p>
+        <span class="text-[11px] font-bold px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded-full border border-emerald-300">소련 ЭВМ-2026</span>
+      </div>
+
+      <!-- 투표 진행 절차 커스텀 설정 체크박스 박스 -->
+      <div class="p-3 bg-stone-50 border border-stone-300 rounded-xl">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-1.5">
+            <span class="text-xs font-bold text-stone-800">⚙️ 투표 진행 절차 설정</span>
+            <span class="text-[10px] text-stone-500">(체크 시 선거 포함)</span>
+          </div>
+          <span id="activeStagesCountBadge" class="text-[10px] font-mono font-bold text-emerald-800 bg-emerald-100 px-1.5 py-0.5 rounded border border-emerald-200">5/5 활성</span>
+        </div>
+        <div id="stageCheckboxesContainer" class="space-y-1.5">
+          <!-- JS 동적 주입 -->
+        </div>
       </div>
 
       <!-- 선거 직책 선택 드롭다운 -->
       <div>
-        <div class="flex justify-between items-center mb-1.5">
-          <label class="block text-xs font-bold text-stone-700 uppercase tracking-wider">선거 직책 선택</label>
+        <div class="flex justify-between items-center mb-1">
+          <label class="block text-xs font-bold text-stone-700 uppercase tracking-wider">현재 관리 직책 선택</label>
           <div class="flex items-center gap-1.5">
             <input type="checkbox" id="seqVoteToggle" class="rounded text-emerald-600 focus:ring-emerald-500 w-3.5 h-3.5 cursor-pointer" checked />
-            <label for="seqVoteToggle" class="text-xs font-semibold text-stone-600 cursor-pointer select-none">5단계 연속 선거 진행</label>
+            <label for="seqVoteToggle" id="seqVoteLabel" class="text-xs font-semibold text-stone-600 cursor-pointer select-none">연속 선거 진행</label>
           </div>
         </div>
+
         <div class="relative">
           <select id="roleSelector" class="w-full appearance-none bg-stone-50 border border-stone-300 rounded-lg px-3 py-2 text-xs font-semibold text-stone-800 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600 pr-8 transition">
             <!-- JS 동적 주입 -->
@@ -368,146 +370,138 @@
           </div>
         </div>
         
-        <!-- 공화국 대통령 선거 시 공화국 전환 바 -->
-        <div id="republicSelectorWrap" class="mt-2 p-2 bg-emerald-50/80 border border-emerald-200 rounded-lg hidden">
-          <div class="flex items-center justify-between mb-1">
-            <span class="text-[11px] font-bold text-emerald-900 flex items-center gap-1">
-              <span>🏛️</span> 대상 연방 공화국 선택:
-            </span>
-            <span id="activeRepBadge" class="text-[10px] font-mono font-bold text-emerald-800 bg-white px-1.5 py-0.5 rounded border border-emerald-300">КазССР</span>
+        <!-- 공화국 대통령 선거 시 15개 연방공화국 선택기 -->
+        <div id="republicSelectWrap" class="mt-2 p-2 bg-amber-50/80 border border-amber-200 rounded-lg hidden">
+          <div class="flex justify-between items-center mb-1">
+            <label class="text-[11px] font-bold text-amber-900">공화국 대통령 대상 공화국 선택:</label>
+            <span id="activeRepBadge" class="text-[10px] font-mono px-1.5 py-0.2 bg-amber-200 text-amber-900 rounded font-bold">РСФСР</span>
           </div>
-          <select id="republicSelect" class="w-full text-xs font-semibold bg-white border border-emerald-300 rounded-md px-2 py-1 text-emerald-950 focus:ring-1 focus:ring-emerald-600 outline-none">
-            <!-- JS 동적 생성 -->
+          <select id="republicSelect" class="w-full text-xs font-medium bg-white border border-amber-300 rounded px-2 py-1 outline-none text-stone-800">
+            <!-- 15개 공화국 목록 동적 생성 -->
           </select>
-          <p class="text-[10px] text-emerald-700 mt-1 leading-tight">각 구성 공화국마다 독립된 대통령 후보 목록과 개표가 관리됩니다.</p>
         </div>
       </div>
 
       <!-- 현재 등록된 후보 목록 -->
       <div>
-        <div class="flex justify-between items-center mb-1.5">
-          <span class="text-xs font-bold uppercase tracking-wider text-stone-500">등록된 후보자 목록</span>
-          <span id="candidateCount" class="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">0명</span>
+        <div class="flex justify-between items-center mb-1">
+          <span class="text-xs font-bold uppercase tracking-wider text-stone-600">등록된 후보 목록</span>
+          <span id="candidateCount" class="text-xs font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">0명</span>
         </div>
-        <div id="candidatesListContainer" class="space-y-2 max-h-48 overflow-y-auto pr-1">
+        <div id="candidatesListContainer" class="space-y-1.5 max-h-40 overflow-y-auto pr-1">
           <!-- JS 렌더링 -->
         </div>
       </div>
 
       <!-- 관리자 액션 버튼 4개 -->
-      <div class="grid grid-cols-2 gap-2.5 pt-1">
-        <button id="btnViewResults" class="bg-emerald-700 hover:bg-emerald-800 active:scale-[0.98] text-white font-bold py-2.5 px-3 rounded-lg text-xs shadow transition flex items-center justify-center gap-1.5">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+      <div class="grid grid-cols-2 gap-2 pt-1">
+        <button id="btnViewResults" class="bg-emerald-700 hover:bg-emerald-800 active:scale-[0.98] text-white font-bold py-2 px-3 rounded-lg text-xs shadow transition flex items-center justify-center gap-1.5">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
           투표 결과 보기
         </button>
-        <button id="btnResetAllVotes" class="bg-rose-700 hover:bg-rose-800 active:scale-[0.98] text-white font-bold py-2.5 px-3 rounded-lg text-xs shadow transition flex items-center justify-center gap-1.5">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+        <button id="btnResetAllVotes" class="bg-rose-700 hover:bg-rose-800 active:scale-[0.98] text-white font-bold py-2 px-3 rounded-lg text-xs shadow transition flex items-center justify-center gap-1.5">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
           모든 투표 초기화
         </button>
-        <button id="btnExportCandidates" class="bg-stone-800 hover:bg-stone-900 active:scale-[0.98] text-white font-bold py-2.5 px-3 rounded-lg text-xs shadow transition flex items-center justify-center gap-1.5">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+        <button id="btnExportCandidates" class="bg-blue-700 hover:bg-blue-800 active:scale-[0.98] text-white font-bold py-2 px-3 rounded-lg text-xs shadow transition flex items-center justify-center gap-1.5">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
           후보/결과 파일 저장
         </button>
-        <button id="btnImportCandidatesTrigger" class="bg-stone-600 hover:bg-stone-700 active:scale-[0.98] text-white font-bold py-2.5 px-3 rounded-lg text-xs shadow transition flex items-center justify-center gap-1.5">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l4-4m0 0l4 4m-4-4v12"></path></svg>
+        <button id="btnImportCandidatesTrigger" class="bg-stone-700 hover:bg-stone-800 active:scale-[0.98] text-white font-bold py-2 px-3 rounded-lg text-xs shadow transition flex items-center justify-center gap-1.5">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l4-4m0 0l4 4m-4-4v12"></path></svg>
           후보/결과 파일 로드
         </button>
         <input type="file" id="candidateFileInput" accept=".json" class="hidden" />
       </div>
 
-      <!-- 새 후보자 추가 폼 구역 -->
-      <div class="border-t border-stone-200 pt-3">
-        <div class="flex items-center justify-between mb-2">
-          <span class="text-xs font-bold uppercase tracking-wider text-stone-800">새 후보자 등록</span>
-          <div class="flex items-center gap-1 text-[11px] bg-stone-100 px-2 py-0.5 rounded border border-stone-200">
-            <span class="text-stone-500 font-medium">사진 비율:</span>
-            <button type="button" id="btnRatio34" class="px-1.5 py-0.5 font-bold rounded bg-emerald-700 text-white transition">3:4</button>
-            <button type="button" id="btnRatio45" class="px-1.5 py-0.5 font-bold rounded text-stone-600 hover:text-stone-900 transition">4:5</button>
+      <!-- 새 후보 추가 폼 구역 -->
+      <div class="border-t border-stone-200 pt-2.5">
+        <div class="flex items-center justify-between mb-1.5">
+          <span class="text-xs font-bold text-stone-800">새 후보 추가</span>
+          <div class="flex items-center gap-1 text-[10px] bg-stone-100 px-2 py-0.5 rounded border border-stone-200">
+            <span class="text-stone-500">사진 비율:</span>
+            <button type="button" id="btnRatio34" class="px-1.5 py-0.2 font-bold rounded bg-emerald-700 text-white transition">3:4</button>
+            <button type="button" id="btnRatio45" class="px-1.5 py-0.2 font-bold rounded text-stone-600 hover:text-stone-900 transition">4:5</button>
           </div>
         </div>
 
-        <!-- 이름, 소속 정당, 기호 및 [🎲 번호생성] -->
-        <div class="grid grid-cols-12 gap-2 mb-2">
-          <input type="text" id="newCandName" placeholder="후보자 성명" class="col-span-5 border border-stone-300 rounded-lg px-2.5 py-2 text-xs focus:ring-1 focus:ring-emerald-600 outline-none" />
-          <input type="text" id="newCandParty" placeholder="소속 정당 (예: PSD)" class="col-span-4 border border-stone-300 rounded-lg px-2.5 py-2 text-xs focus:ring-1 focus:ring-emerald-600 outline-none" />
+        <div class="grid grid-cols-12 gap-1.5 mb-2">
+          <input type="text" id="newCandName" placeholder="이름" class="col-span-5 border border-stone-300 rounded px-2 py-1.5 text-xs focus:ring-1 focus:ring-emerald-600 outline-none" />
+          <input type="text" id="newCandParty" placeholder="소속 정당" class="col-span-4 border border-stone-300 rounded px-2 py-1.5 text-xs focus:ring-1 focus:ring-emerald-600 outline-none" />
           <div class="col-span-3 relative flex items-center">
-            <input type="text" id="newCandNumber" placeholder="번호" maxlength="5" class="w-full border border-stone-300 rounded-lg pl-2 pr-6 py-2 text-xs font-mono font-bold focus:ring-1 focus:ring-emerald-600 outline-none" />
-            <button type="button" id="btnGenNumber" title="유효 기호 자동생성" class="absolute right-1 text-stone-400 hover:text-emerald-700 p-1">
+            <input type="text" id="newCandNumber" placeholder="번호" maxlength="5" class="w-full border border-stone-300 rounded pl-1.5 pr-5 py-1.5 text-xs font-mono font-bold focus:ring-1 focus:ring-emerald-600 outline-none" />
+            <button type="button" id="btnGenNumber" title="유효 번호 자동생성" class="absolute right-1 text-stone-400 hover:text-emerald-700 p-0.5">
               🎲
             </button>
           </div>
         </div>
 
-        <!-- 후보자 사진 드래그존 및 러닝메이트(부통령) 구역 -->
-        <div class="grid grid-cols-2 gap-2 mb-3">
-          
-          <!-- 좌측: 후보자 메인 사진 -->
-          <div id="candDropZone" class="border-2 border-dashed border-stone-300 rounded-xl p-2.5 flex flex-col items-center justify-between text-center bg-stone-50 hover:bg-stone-100/80 transition min-h-[145px] cursor-pointer">
-            <div id="candPhotoPreviewWrap" class="w-14 h-18 bg-white rounded border border-stone-200 overflow-hidden flex items-center justify-center text-xl shadow-xs pointer-events-none">
+        <div class="grid grid-cols-2 gap-2 mb-2">
+          <!-- 후보자 사진 -->
+          <div id="candDropZone" class="border-2 border-dashed border-stone-300 rounded-lg p-2 flex flex-col items-center justify-between text-center bg-stone-50/70 hover:bg-stone-50 transition min-h-[135px] cursor-pointer">
+            <div id="candPhotoPreviewWrap" class="w-12 h-16 bg-white rounded border border-stone-200 overflow-hidden flex items-center justify-center text-lg shadow-xs pointer-events-none">
               <span id="candPhotoPreviewText">👤</span>
             </div>
             <div class="w-full">
-              <label class="block text-[10.5px] font-semibold text-stone-600 cursor-pointer hover:text-emerald-700">
-                <span>사진 클릭/드래그</span>
+              <label class="block text-[10px] font-semibold text-stone-600 cursor-pointer hover:text-emerald-700">
+                <span>사진 드래그/클릭</span>
                 <input type="file" id="candPhotoFile" accept="image/*" class="hidden" />
               </label>
               <div class="text-[8px] text-stone-400 uppercase my-0.5">— OR —</div>
-              <input type="text" id="candPhotoUrl" placeholder="웹 사진 URL" class="w-full text-[9.5px] border border-stone-200 rounded px-1.5 py-1 outline-none bg-white focus:border-emerald-600" />
+              <input type="text" id="candPhotoUrl" placeholder="웹 이미지 링크 (URL)" class="w-full text-[9px] border border-stone-200 rounded px-1.5 py-0.5 outline-none bg-white focus:border-emerald-500" />
             </div>
           </div>
 
-          <!-- 우측: 부통령/부지사 러닝메이트 사진 -->
-          <div id="viceContainer" class="border border-stone-200 rounded-xl p-2.5 flex flex-col justify-between bg-stone-50/60 min-h-[145px]">
-            <input type="text" id="newViceName" placeholder="러닝메이트 성명" class="w-full border border-stone-300 rounded px-2 py-1 text-xs mb-1 outline-none focus:border-emerald-600" />
+          <!-- 부후보 / 러닝메이트 -->
+          <div id="viceContainer" class="border border-stone-200 rounded-lg p-2 flex flex-col justify-between bg-stone-50/40 min-h-[135px]">
+            <input type="text" id="newViceName" placeholder="러닝메이트(부통령/부지사) 이름" class="w-full border border-stone-300 rounded px-2 py-1 text-xs mb-1 outline-none focus:border-emerald-500" />
             
-            <div id="viceDropZone" class="border-2 border-dashed border-stone-300 rounded-lg p-1.5 flex flex-col items-center text-center cursor-pointer bg-stone-50 hover:bg-stone-100 transition">
-              <div id="vicePhotoPreviewWrap" class="w-10 h-13 bg-white rounded border border-stone-200 overflow-hidden flex items-center justify-center text-sm shadow-xs mb-1 pointer-events-none">
+            <div id="viceDropZone" class="border-2 border-dashed border-stone-300 rounded p-1 flex flex-col items-center text-center cursor-pointer bg-stone-50/70 hover:bg-stone-50 transition">
+              <div id="vicePhotoPreviewWrap" class="w-9 h-12 bg-white rounded border border-stone-200 overflow-hidden flex items-center justify-center text-xs shadow-xs mb-1 pointer-events-none">
                 <span id="vicePhotoPreviewText">👥</span>
               </div>
-              <label class="text-[10px] font-medium text-stone-600 cursor-pointer hover:text-emerald-700">
-                <span>부통령 사진 첨부</span>
+              <label class="text-[9px] font-medium text-stone-600 cursor-pointer hover:text-emerald-700">
+                <span>부후보 사진 클릭/드래그</span>
                 <input type="file" id="vicePhotoFile" accept="image/*" class="hidden" />
               </label>
-              <span class="text-[8px] text-stone-400 my-0.5">— OR —</span>
-              <input type="text" id="vicePhotoUrl" placeholder="웹 사진 URL" class="w-full text-[9px] border border-stone-200 rounded px-1.5 py-0.5 outline-none bg-white focus:border-emerald-600" />
+              <input type="text" id="vicePhotoUrl" placeholder="웹 이미지 URL" class="w-full text-[8.5px] border border-stone-200 rounded px-1 py-0.5 outline-none bg-white focus:border-emerald-500 mt-1" />
             </div>
           </div>
-
         </div>
 
-        <button id="btnAddCandidate" class="w-full bg-emerald-800 hover:bg-emerald-900 active:scale-[0.99] text-white font-bold py-2.5 rounded-lg text-xs shadow transition">
-          후보자 추가 등록
+        <button id="btnAddCandidate" class="w-full bg-emerald-800 hover:bg-emerald-900 active:scale-[0.99] text-white font-bold py-2 rounded-lg text-xs shadow transition">
+          후보 등록
         </button>
-
       </div>
 
     </aside>
 
   </div>
 
-  <!-- ================= 하단 이동: 소비에트 시스템 상태바 및 언어/공화국 선택기 ================= -->
-  <footer class="w-full max-w-6xl mt-6 flex flex-col sm:flex-row items-center justify-between gap-3 bg-stone-100/90 backdrop-blur-xs p-3.5 rounded-2xl shadow-sm border border-stone-300 select-none">
-    <div class="flex items-center gap-3">
-      <div class="w-10 h-10 rounded-xl bg-stone-800 text-amber-400 flex items-center justify-center font-bold text-xl border border-stone-600 shadow-inner">
+  <!-- 3. 맨 밑으로 배치된 시스템 상태 및 15개 공화국 언어 선택 바 -->
+  <footer class="w-full max-w-6xl mt-auto bg-stone-100/90 border border-stone-300 rounded-2xl p-3 shadow-md backdrop-blur-xs flex flex-col sm:flex-row items-center justify-between gap-3">
+    <div class="flex items-center gap-2.5">
+      <div class="w-8 h-8 rounded-xl bg-stone-900 text-amber-300 flex items-center justify-center text-sm shadow">
         ⚙️
       </div>
       <div>
         <div class="flex items-center gap-2">
-          <h1 class="text-base sm:text-lg font-black text-stone-900 tracking-tight">СОЮЗНАЯ ЭЛЕКТРОННАЯ СИСТЕМА ГОЛОСОВАНИЯ</h1>
-          <span class="text-[10px] font-mono font-bold px-2 py-0.5 bg-emerald-800 text-emerald-100 rounded-sm">ЭВМ-2026</span>
+          <h2 class="text-xs sm:text-sm font-black text-stone-900 tracking-tight">СОЮЗНАЯ ЭЛЕКТРОННАЯ СИСТЕМА ГОЛОСОВАНИЯ</h2>
+          <span class="text-[10px] font-mono-hardware font-bold px-1.5 py-0.2 bg-emerald-800 text-white rounded">ЭВМ-2026</span>
         </div>
-        <p class="text-xs text-stone-500">소비에트 연방 다당제 민주공화국 중앙선거위원회 공식 전자투표기</p>
+        <p class="text-[11px] text-stone-600">소비에트 연방 다당제 민주공화국 중앙선거위원회 공식 전자투표기 시스템</p>
       </div>
     </div>
-    
-    <div class="flex items-center gap-2 bg-stone-200/80 p-1.5 rounded-xl border border-stone-300">
-      <span class="text-xs font-bold text-stone-700 pl-1">언어 / 공화국:</span>
-      <select id="quickLangSelect" class="text-xs font-semibold bg-white border border-stone-300 rounded-lg px-2.5 py-1.5 focus:ring-2 focus:ring-emerald-600 outline-none">
-        <option value="kk" selected>5. Қазақша (카자흐어 - КазССР)</option>
-        <option value="ru">1. Русский (러시아어 - РСФСР)</option>
-        <option value="uk">2. Українська (우크라이나어 - УССР)</option>
-        <option value="be">3. Беларуская (벨라루스어 - БССР)</option>
-        <option value="uz">4. Oʻzbekcha (우즈베크어 - УзССР)</option>
+
+    <!-- 15개 소련 구성 공화국 언어 선택기 -->
+    <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-stone-300 shadow-xs shrink-0">
+      <label for="quickLangSelect" class="text-xs font-bold text-stone-700 shrink-0">언어 선택:</label>
+      <select id="quickLangSelect" class="text-xs font-semibold text-stone-800 bg-transparent outline-none cursor-pointer">
+        <option value="kk" selected>1. Қазақша (카자흐어 - КазССР)</option>
+        <option value="ru">2. Русский (러시아어 - РСФСР)</option>
+        <option value="uk">3. Українська (우크라이나어 - УССР)</option>
+        <option value="be">4. Беларуская (벨라루스어 - БССР)</option>
+        <option value="uz">5. Oʻzbekcha (우즈베크어 - УзССР)</option>
         <option value="ka">6. ქართული (조지아어 - ГССР)</option>
         <option value="az">7. Azərbaycan (아제르바이잔어 - АзССР)</option>
         <option value="lt">8. Lietuvių (리투아니아어 - ЛитССР)</option>
@@ -518,70 +512,85 @@
         <option value="hy">13. Հայերեն (아르메니아어 - АрмССР)</option>
         <option value="tk">14. Türkmençe (투르크멘어 - ТуркССР)</option>
         <option value="et">15. Eesti (에스토니아어 - ЭстССР)</option>
-        <option value="ko">한국어 번역 (Korean Guide)</option>
+        <option value="ko">한국어 번역 가이드 (Korean)</option>
       </select>
     </div>
   </footer>
 
-  <!-- 개표 결과 보고서 모달 (Протокол голосования) -->
-  <div id="resultModal" class="fixed inset-0 bg-stone-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 hidden">
+  <!-- 투표 결과 모달 (Протокол голосования) -->
+  <div id="resultModal" class="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 hidden">
     <div class="bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-5 sm:p-6 shadow-2xl border border-stone-300">
-      
       <div class="flex justify-between items-center border-b border-stone-200 pb-3 mb-4">
         <div>
-          <h3 class="text-lg font-black text-stone-900 flex items-center gap-2">
-            <span>📊</span> Протокол голосования (투표 개표 보고서)
-          </h3>
-          <p class="text-xs text-stone-500">소비에트 연방 중앙선거위원회 공인 실시간 집계</p>
+          <h3 class="text-lg font-black text-stone-900">🗳️ 투표 결과 (Протокол голосования)</h3>
+          <p class="text-xs text-stone-500">실시간 누적 개표 보고서</p>
         </div>
         <button id="btnCloseModal" class="text-stone-400 hover:text-stone-700 text-2xl font-bold p-1 leading-none">&times;</button>
       </div>
 
-      <div id="modalResultContent" class="space-y-4 text-xs font-sans">
+      <div id="modalResultContent" class="space-y-3.5 text-xs font-sans">
         <!-- JS 동적 렌더링 -->
       </div>
 
-      <div class="flex gap-2 justify-end pt-4 mt-4 border-t border-stone-200">
-        <button id="btnExportResultJson" class="px-3.5 py-2 bg-stone-800 text-white rounded-lg text-xs font-bold hover:bg-stone-900 transition flex items-center gap-1.5">
-          <span>JSON 결과 다운로드</span>
+      <div class="flex gap-2 justify-end pt-4 mt-4 border-t border-stone-100">
+        <button id="btnExportResultJson" class="px-3 py-1.5 bg-stone-800 text-white rounded-lg text-xs font-bold hover:bg-stone-900 transition">
+          JSON 결과 다운로드
         </button>
-        <button id="btnCloseModalBtn" class="px-4 py-2 bg-stone-200 text-stone-800 rounded-lg text-xs font-bold hover:bg-stone-300 transition">
+        <button id="btnCloseModalBtn" class="px-4 py-1.5 bg-stone-200 text-stone-800 rounded-lg text-xs font-bold hover:bg-stone-300 transition">
           닫기
         </button>
       </div>
-
     </div>
   </div>
 
   <!-- 알림 토스트 박스 -->
-  <div id="toastBox" class="fixed bottom-5 right-5 bg-stone-900 text-white px-4 py-2.5 rounded-xl shadow-2xl text-xs font-semibold transition-all duration-300 transform translate-y-20 opacity-0 pointer-events-none z-50 flex items-center gap-2 border border-stone-700">
+  <div id="toastBox" class="fixed bottom-16 right-5 bg-stone-900 text-white px-4 py-2.5 rounded-xl shadow-2xl text-xs font-semibold transition-all duration-300 transform translate-y-20 opacity-0 pointer-events-none z-50 flex items-center gap-2">
     <span id="toastMsg">알림 메시지</span>
   </div>
 
   <script>
-    // 15개 소련 구성 공화국 공식 언어 번역 사전
+    // 15개 소련 구성 공화국 정의 (공화국 대통령 후보 분리 관리)
+    const SOVIET_REPUBLICS = {
+      kk: { name: '카자흐 SSR (Қазақ КСР)', short: 'ҚазКСР' },
+      ru: { name: '러시아 SFSR (РСФСР)', short: 'РСФСР' },
+      uk: { name: '우크라이나 SSR (УРСР)', short: 'УРСР' },
+      be: { name: '벨라루스 SSR (БССР)', short: 'БССР' },
+      uz: { name: '우즈베크 SSR (ЎзССР)', short: 'ЎзССР' },
+      ka: { name: '조지아 SSR (საქართველოს სსრ)', short: 'ГССР' },
+      az: { name: '아제르바이잔 SSR (АзССР)', short: 'АзССР' },
+      lt: { name: '리투아니아 SSR (Lietuvos TSR)', short: 'ЛитССР' },
+      ro: { name: '몰도바 SSR (РСС Молдовеняскэ)', short: 'МССР' },
+      lv: { name: '라트비아 SSR (Latvijas PSR)', short: 'ЛатССР' },
+      ky: { name: '키르기스 SSR (Кыргыз ССР)', short: 'КиргССР' },
+      tg: { name: '타지크 SSR (РСС Тоҷикистон)', short: 'ТаджССР' },
+      hy: { name: '아르메니아 SSR (Հայկական ԽՍՀ)', short: 'АрмССР' },
+      tk: { name: '투르크멘 SSR (Түркменистан ССР)', short: 'ТуркССР' },
+      et: { name: '에스토니아 SSR (Eesti NSV)', short: 'ЭстССР' }
+    };
+
+    // 15개 공화국 언어별 화면 UI 사전
     const SOVIET_I18N = {
       ru: {
         training: 'ОБУЧЕНИЕ', yourVoteFor: 'ВАШ ГОЛОС ЗА', number: 'Номер:', name: 'Имя:', party: 'Партия:',
-        pressKey: 'Нажмите клавишу:', confirmPrompt: 'для ПОДТВЕРЖДЕНИЯ', corrigePrompt: 'для СБРОСА и ПОВТОРА',
+        pressKey: 'Нажмите клавишу:', confirmPrompt: 'для ПОДТВЕРЖДЕНИЯ голоса', corrigePrompt: 'для СБРОСА и ПОВТОРА',
         checkVote: 'ПРОВЕРЬТЕ СВОЙ ВЫБОР', blankVote: 'ПУСТОЙ БЮЛЛЕТЕНЬ', wrongNumber: 'НЕВЕРНЫЙ НОМЕР',
         nullVote: 'НЕДЕЙСТВИТЕЛЬНЫЙ', fim: 'КОНЕЦ', votou: 'ГОЛОС УЧТЁН', header: 'ИЗБИРАТЕЛЬНАЯ КОМИССИЯ СОЮЗА'
       },
       uk: {
         training: 'ТРЕНУВАННЯ', yourVoteFor: 'ВАШ ГОЛОС ЗА', number: 'Номер:', name: 'Ім’я:', party: 'Партія:',
-        pressKey: 'Натисніть клавішу:', confirmPrompt: 'для ПІДТВЕРДЖЕННЯ', corrigePrompt: 'для ПОВТОРНОГО ВВЕДЕННЯ',
+        pressKey: 'Натисніть клавішу:', confirmPrompt: 'для ПІДТВЕРДЖЕННЯ голосу', corrigePrompt: 'для ПОВТОРНОГО ВВЕДЕННЯ',
         checkVote: 'ПЕРЕВІРТЕ СВІЙ ВИБІР', blankVote: 'ПОРОЖНІЙ БЮЛЕТЕНЬ', wrongNumber: 'НЕВІРНИЙ НОМЕР',
         nullVote: 'НЕДІЙСНИЙ ГОЛОС', fim: 'КІНЕЦЬ', votou: 'ПРОГОЛОСОВАНО', header: 'ВИБОРЧА КОМІСІЯ СОЮЗУ'
       },
       be: {
         training: 'НАВУЧАННЕ', yourVoteFor: 'ВАШ ГОЛАС ЗА', number: 'Нумар:', name: 'Імя:', party: 'Партыя:',
-        pressKey: 'Націсніце клавішу:', confirmPrompt: 'для ПАЦВЕРДЖАННЯ', corrigePrompt: 'для ВЫПРАЎЛЕННЯ голасу',
+        pressKey: 'Націсніце клавішу:', confirmPrompt: 'для ПАЦВЕРДЖАННЯ голасу', corrigePrompt: 'для ВЫПРАЎЛЕННЯ голасу',
         checkVote: 'ПРАВЕРЦЕ СВОЙ ВЫБАР', blankVote: 'ПУСТЫ БЮЛЕТЭНЬ', wrongNumber: 'НЯПРАВІЛЬНЫ НУМАР',
         nullVote: 'НЕДЗЕЙСНЫ ГОЛАС', fim: 'КАНЕЦ', votou: 'ПРАГАЛАСАВАНА', header: 'ВЫБАРЧАЯ КАМІСІЯ САЮЗА'
       },
       uz: {
         training: 'MASHGʻULOT', yourVoteFor: 'SIZNING OVOZINGIZ', number: 'Raqam:', name: 'Ism:', party: 'Partiya:',
-        pressKey: 'Tugmani bosing:', confirmPrompt: 'TASDIQLASH uchun', corrigePrompt: 'QAYTA KIRITISH uchun',
+        pressKey: 'Tugmani bosing:', confirmPrompt: 'ovozni TASDIQLASH uchun', corrigePrompt: 'QAYTA KIRITISH uchun',
         checkVote: 'TANLOVINGIZNI TEKSHIRING', blankVote: 'BOʻSH BYULLETEN', wrongNumber: 'NOTOʻGʻRI RAQAM',
         nullVote: 'HAQIQIY EMAS', fim: 'TAMOM', votou: 'OVOZ BERILDI', header: 'ITTIFOQ SAYLOV KOMISSIYASI'
       },
@@ -593,73 +602,72 @@
       },
       ka: {
         training: 'სწავლება', yourVoteFor: 'თქვენი ხმა', number: 'ნომერი:', name: 'სახელი:', party: 'პარტია:',
-        pressKey: 'დააჭირეთ ღილაკს:', confirmPrompt: 'დასადასტურებლად', corrigePrompt: 'თავიდან ასაკრებად',
-        checkVote: 'შეამოწმეთ არჩევანი', blankVote: 'ცარიელი ბიულეტენი', wrongNumber: 'არასწორი ნომერი',
+        pressKey: 'დააჭირეთ ღილაკს:', confirmPrompt: 'ხმის დასადასტურებლად', corrigePrompt: 'თავიდან ასაკრებად',
+        checkVote: 'შეამოწმეთ თქვენი არჩევანი', blankVote: 'ცარიელი ბიულეტენი', wrongNumber: 'არასწორი ნომერი',
         nullVote: 'ბათილი ხმა', fim: 'დასასრული', votou: 'მიღებულია', header: 'საკავშირო საარჩევნო კომისია'
       },
       az: {
         training: 'TƏLİM', yourVoteFor: 'SƏSİNİZ', number: 'Nömrə:', name: 'Ad:', party: 'Partiya:',
-        pressKey: 'Düyməni basın:', confirmPrompt: 'TƏSDİQ ETMƏK üçün', corrigePrompt: 'YENİDƏN BAŞLAMAQ üçün',
+        pressKey: 'Düyməni basın:', confirmPrompt: 'səsi TƏSDİQ ETMƏK üçün', corrigePrompt: 'YENİDƏN BAŞLAMAQ üçün',
         checkVote: 'SEÇİMİNİZİ YOXLAYIN', blankVote: 'BOŞ BÜLLETEN', wrongNumber: 'SƏHV NÖMRƏ',
         nullVote: 'ETİBARSIZ SƏS', fim: 'SON', votou: 'SƏS VERİLDİ', header: 'İTTİFAQ SEÇKİ KOMİSSİYASI'
       },
       lt: {
         training: 'MOKYMASIS', yourVoteFor: 'JŪSŲ BALSAS UŽ', number: 'Numeris:', name: 'Pavardė:', party: 'Partija:',
-        pressKey: 'Paspauskite klavišą:', confirmPrompt: 'PATVIRTINTI', corrigePrompt: 'PATAISYTI',
+        pressKey: 'Paspauskite klavišą:', confirmPrompt: 'balsui PATVIRTINTI', corrigePrompt: 'balsui PATAISYTI',
         checkVote: 'PATIKRINKITE PASIRINKIMĄ', blankVote: 'TUŠČIAS BIULETENIS', wrongNumber: 'NETEISINGAS NUMERIS',
         nullVote: 'NEGALIOJANTIS', fim: 'PABAIGA', votou: 'PROBALSAVOTE', header: 'SĄJUNGOS RINKIMŲ KOMISIJA'
       },
       ro: {
         training: 'INSTRUIRE', yourVoteFor: 'VOTUL DVS PENTRU', number: 'Număr:', name: 'Nume:', party: 'Partid:',
-        pressKey: 'Apăsați tasta:', confirmPrompt: 'CONFIRMARE', corrigePrompt: 'CORECTARE',
+        pressKey: 'Apăsați tasta:', confirmPrompt: 'pentru a CONFIRMA votul', corrigePrompt: 'pentru a CORECTA votul',
         checkVote: 'VERIFICAȚI OPȚIUNEA', blankVote: 'VOT ALB', wrongNumber: 'NUMĂR GREȘIT',
         nullVote: 'VOT NUL', fim: 'SFÂRȘIT', votou: 'AȚI VOTAT', header: 'COMISIA ELECTORALĂ A UNIUNII'
       },
       lv: {
         training: 'APMĀCĪBA', yourVoteFor: 'JŪSU BALSS PAR', number: 'Numurs:', name: 'Vārds:', party: 'Partija:',
-        pressKey: 'Nospiediet taustiņu:', confirmPrompt: 'APSTIPRINĀT', corrigePrompt: 'LABOT',
+        pressKey: 'Nospiediet taustiņu:', confirmPrompt: 'lai APSTIPRINĀTU balsi', corrigePrompt: 'lai LABOTU balsi',
         checkVote: 'PĀRBAUDIET IZVĒLI', blankVote: 'TUKŠS BIĻETENS', wrongNumber: 'NEPAREIZS NUMURS',
         nullVote: 'NEDERĪGA BALSS', fim: 'BEIGAS', votou: 'NOBALSOTS', header: 'SAVIENĪBAS VĒLĒŠANU KOMISIJA'
       },
       ky: {
         training: 'ОКУТУУ', yourVoteFor: 'СИЗДИН ДОБУШУҢУЗ', number: 'Номери:', name: 'Аты-жөнү:', party: 'Партиясы:',
-        pressKey: 'Баскычты басыңыз:', confirmPrompt: 'ЫРАСТОО үчүн', corrigePrompt: 'КАЙРА ТЕРҮҮ үчүн',
+        pressKey: 'Баскычты басыңыз:', confirmPrompt: 'добушту ЫРАСТОО үчүн', corrigePrompt: 'КАЙРА ТЕРҮҮ үчүн',
         checkVote: 'ТАҢДООҢУЗДУ ТЕКШЕРИҢИЗ', blankVote: 'БОШ БЮЛЛЕТЕНЬ', wrongNumber: 'ТУУРА ЭМЕС НОМЕР',
         nullVote: 'ЖАРАКСЫЗ ДОБУШ', fim: 'АЯГЫ', votou: 'ДОБУШ БЕРИЛДИ', header: 'БИРИКМЕНИН ШАЙЛОО КОМИССИЯСЫ'
       },
       tg: {
         training: 'ОМӮЗИШ', yourVoteFor: 'РАЪЙИ ШУМО БАРОИ', number: 'Рақам:', name: 'Ном:', party: 'Ҳизб:',
-        pressKey: 'Тугмаро пахш кунед:', confirmPrompt: 'ТАСДИҚИ овоз', corrigePrompt: 'ТАСҲЕҲИ овоз',
+        pressKey: 'Тугмаро пахш кунед:', confirmPrompt: 'барои ТАСДИҚИ овоз', corrigePrompt: 'барои ТАСҲЕҲИ овоз',
         checkVote: 'ИНТИХОБИ ХУДРО САНҶЕД', blankVote: 'БЮЛЛЕТЕНИ ХОЛӢ', wrongNumber: 'РАҚАМИ НОДУРУСТ',
-        nullVote: 'БЕЭЪТИБОР', fim: 'ОХИР', votou: 'ОВОЗ ДОДА ШУД', header: 'КОМИССИЯИ ИНТИХОБОТИИ ИТТИҲОД'
+        nullVote: 'БЕЭЪТИБОР', fim: 'ОХИР', votou: 'ОВИЗ ДОДА ШУД', header: 'КОМИССИЯИ ИНТИХОБОТИИ ИТТИҲОД'
       },
       hy: {
         training: 'ՈՒՍՈՒՑՈՒՄ', yourVoteFor: 'ՁԵՐ ՁԱՅՆԸ', number: 'Համար:', name: 'Անուն:', party: 'Կուսակցություն:',
-        pressKey: 'Սեղմեք ստեղնը:', confirmPrompt: 'ՀԱՍՏԱՏԵԼՈՒ համար', corrigePrompt: 'ՈՒՂՂԵԼՈՒ համար',
-        checkVote: 'ՍՏՈՒԳԵՔ ԸՆՏՐՈՒԹՅՈՒՆԸ', blankVote: 'ԴԱՏԱՐԿ ՔՎԵԱԹԵՐԹԻԿ', wrongNumber: 'ՍԽԱԼ ՀԱՄԱՐ',
+        pressKey: 'Սեղմեք ստեղնը:', confirmPrompt: 'ձայնը ՀԱՍՏԱՏԵԼՈՒ համար', corrigePrompt: 'ՈՒՂՂԵԼՈՒ համար',
+        checkVote: 'ՍՏՈՒԳԵՔ ՁԵՐ ԸՆՏՐՈՒԹՅՈՒՆԸ', blankVote: 'ԴԱՏԱՐԿ ՔՎԵԱԹԵՐԹԻԿ', wrongNumber: 'ՍԽԱԼ ՀԱՄԱՐ',
         nullVote: 'ԱՆՎԱՎԵՐ ՔՎԵ', fim: 'ՎԵՐՋ', votou: 'ՔՎԵԱՐԿՎԱԾ Է', header: 'ՄԻՈՒԹՅԱՆ ԸՆՏՐԱԿԱՆ ՀԱՆՁՆԱԺՈՂՈՎ'
       },
       tk: {
         training: 'TƏLIM', yourVoteFor: 'SESIŇIZ', number: 'Belgisi:', name: 'Ady:', party: 'Partiýasy:',
-        pressKey: 'Düwmä basyň:', confirmPrompt: 'TASSYKLAMAK üçin', corrigePrompt: 'DÜZETMEK üçin',
+        pressKey: 'Düwmä basyň:', confirmPrompt: 'sesi TASSYKLAMAK üçin', corrigePrompt: 'DÜZETMEK üçin',
         checkVote: 'SAÝLAWYŇYZY BARLAŇ', blankVote: 'BOŞ BÝULLETEN', wrongNumber: 'NÄDOGRY BELGI',
         nullVote: 'HAKYKY DÄL', fim: 'SOŇY', votou: 'SES BERILDI', header: 'SOÝUZ SAÝLAW TOPARY'
       },
       et: {
         training: 'ÕPPUS', yourVoteFor: 'TEIE HÄÄL', number: 'Number:', name: 'Nimi:', party: 'Partei:',
-        pressKey: 'Vajutage klahvi:', confirmPrompt: 'KINNITAMISEKS', corrigePrompt: 'PARANDAMISEKS',
+        pressKey: 'Vajutage klahvi:', confirmPrompt: 'hääle KINNITAMISEKS', corrigePrompt: 'hääle PARANDAMISEKS',
         checkVote: 'KONTROLLIGE VALIKUT', blankVote: 'TÜHI SEDEL', wrongNumber: 'VALE NUMBER',
         nullVote: 'KEHTETU HÄÄL', fim: 'LÕPP', votou: 'HÄÄLETATUD', header: 'LIIDU VALIMISKOMISJON'
       },
       ko: {
         training: '모의 투표', yourVoteFor: '선택할 공직', number: '기호(번호):', name: '성명:', party: '소속 정당:',
-        pressKey: '버튼을 누르세요:', confirmPrompt: '버튼으로 확정', corrigePrompt: '버튼으로 정정',
+        pressKey: '버튼을 누르세요:', confirmPrompt: '버튼으로 투표 확정', corrigePrompt: '버튼으로 다시 입력',
         checkVote: '선택한 후보를 확인하세요', blankVote: '백지 투표', wrongNumber: '등록되지 않은 기호',
         nullVote: '무효표 처리', fim: '투표 완료', votou: '정상 집계됨', header: '소비에트 연방 선거위원회'
       }
     };
 
-    // 5단계 선거 직책 정의 (지방의원, 지역지사, 공화국 대통령, 최고소비에트 대의원, 연방 대통령)
     const SOVIET_ROLES = {
       sov_loc: {
         id: 'sov_loc',
@@ -705,7 +713,6 @@
         id: 'pres_rep',
         digits: 2,
         hasVice: true,
-        isRepublicSpecific: true,
         shortTabs: {
           ru: 'През. Респуб.', uk: 'През. Респуб.', be: 'Прэз. Рэспуб.', uz: 'Respublika Prez.',
           kk: 'Респ. Президенті', ka: 'რესპ. პრეზიდ.', az: 'Resp. Prezidenti', lt: 'Resp. Prezidentas',
@@ -739,7 +746,7 @@
           ru: 'Депутат Верховного Совета', uk: 'Депутат Верховної Ради', be: 'Дэпутат Вярхоўнага Савета', uz: 'Oliy Sovet Deputati',
           kk: 'Жоғарғы Кеңес Депутаты', ka: 'უმაღლესი საბჭოს დეპუტატი', az: 'Ali Sovet Deputatı', lt: 'Aukščiausiosios Tarybos Deputatas',
           ro: 'Deputat în Sovietul Suprem', lv: 'Augstākās Padomes Deputāts', ky: 'Жогорку Кеңештин Депутаты', tg: 'Вакили Шӯрои Олӣ',
-          hy: 'Գերագույն Խորհրդի Պատգամավոր', tk: 'Ýokary Sowetiň Deputaty', et: 'Ülemnõukogu Saadik', ko: '최고소비에트 대의원'
+          hy: 'Գերագույն Խորհրդի Պատգամավոր', tk: 'Ýokary Sowetiň Deputaty', et: 'Ülemnõukogu Saadik', ko: '최고인민소비에트 대의원'
         }
       },
       pres_fed: {
@@ -769,26 +776,7 @@
 
     const SOVIET_SEQUENCE = ['sov_loc', 'gov_reg', 'pres_rep', 'sov_sup', 'pres_fed'];
 
-    // 15개 소비에트 사회주의 공화국 명칭 정의
-    const SOVIET_REPUBLICS = {
-      kk: { code: 'kk', short: 'КазССР', name: 'Казахская ССР (카자흐 SSR)' },
-      ru: { code: 'ru', short: 'РСФСР', name: 'РСФСР (러시아 SFSR)' },
-      uk: { code: 'uk', short: 'УССР', name: 'Украинская ССР (우크라이나 SSR)' },
-      be: { code: 'be', short: 'БССР', name: 'Белорусская ССР (벨라루스 SSR)' },
-      uz: { code: 'uz', short: 'УзССР', name: 'Узбекская ССР (우즈베크 SSR)' },
-      ka: { code: 'ka', short: 'ГССР', name: 'Грузинская ССР (조지아 SSR)' },
-      az: { code: 'az', short: 'АзССР', name: 'Азербайджанская ССР (아제르바이잔 SSR)' },
-      lt: { code: 'lt', short: 'ЛитССР', name: 'Литовская ССР (리투아니아 SSR)' },
-      ro: { code: 'ro', short: 'МССР', name: 'Молдавская ССР (몰도바 SSR)' },
-      lv: { code: 'lv', short: 'ЛатССР', name: 'Латвийская ССР (라트비아 SSR)' },
-      ky: { code: 'ky', short: 'КиргССР', name: 'Киргизская ССР (키르기스 SSR)' },
-      tg: { code: 'tg', short: 'ТаджССР', name: 'Таджикская ССР (타지크 SSR)' },
-      hy: { code: 'hy', short: 'АрмССР', name: 'Армянская ССР (아르메니아 SSR)' },
-      tk: { code: 'tk', short: 'ТуркССР', name: 'Туркменская ССР (투르크멘 SSR)' },
-      et: { code: 'et', short: 'ЭстССР', name: 'Эстонская ССР (에스토니아 SSR)' }
-    };
-
-    // 초기 후보자 데이터베이스 (공화국 대통령 pres_rep 은 15개 공화국별로 분리 관리)
+    // 기본 후보 데이터베이스 (공화국 대통령 pres_rep는 15개 공화국별 독립 오브젝트로 분리)
     let CANDIDATES_DB = {
       sov_loc: {
         '10001': { name: 'Mikhail Romanov', party: 'PSD (사회민주당)', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80' },
@@ -801,52 +789,16 @@
       },
       pres_rep: {
         kk: {
-          '11': { name: 'Kanat Nurlanuly', party: 'Adal (사회정의당)', vice: 'Aygul Bazarbayeva', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80' },
-          '22': { name: 'Dinmukhamed Sadykov', party: 'UFC (연방시민동맹)', vice: 'Elena Vlasova', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80' }
+          '11': { name: 'Dinmukhamed Kunayev Jr.', party: 'K-PSD (카자흐 사회민주당)', vice: 'Olga Kim', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80' },
+          '22': { name: 'Askar Zhumagaliev', party: 'Alash-PTR (인민노동당)', vice: 'Serik Akhmetov', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80' }
         },
         ru: {
-          '11': { name: 'Tatiana Morozova', party: 'PSD (사회민주당)', vice: 'Victor Silva', avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=300&q=80' },
+          '11': { name: 'Tatiana Morozova', party: 'PSD (러시아 사회민주당)', vice: 'Victor Silva', avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=300&q=80' },
           '22': { name: 'Alexei Voronin', party: 'PLP (진보자유당)', vice: 'Olga Pavlova', avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=300&q=80' }
         },
         uk: {
-          '14': { name: 'Bohdan Shevchenko', party: 'Rukh (민주연합)', vice: 'Kateryna Hrynko', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80' },
-          '28': { name: 'Yaroslav Kovalenko', party: 'PTR (인민노동당)', vice: 'Mykhailo Polishchuk', avatar: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=300&q=80' }
-        },
-        be: {
-          '12': { name: 'Viktar Radkevich', party: 'Hramada (사회민주당)', vice: 'Hanna Kavaleva', avatar: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=300&q=80' }
-        },
-        uz: {
-          '18': { name: 'Rustam Karimov', party: 'Erk (자유사회당)', vice: 'Dilshod Alimov', avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=300&q=80' }
-        },
-        ka: {
-          '15': { name: 'Giorgi Chavchavadze', party: 'Tavisupleba (연방자유당)', vice: 'Nino Beridze', avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=300&q=80' }
-        },
-        az: {
-          '20': { name: 'Ilgar Mammadov', party: 'Musavat (민주평등당)', vice: 'Leyla Aliyeva', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80' }
-        },
-        lt: {
-          '16': { name: 'Vytautas Landsbergis Jr.', party: 'Sąjūdis (연방진보당)', vice: 'Rūta Meilutytė', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80' }
-        },
-        ro: {
-          '21': { name: 'Ion Ceban', party: 'Socialiștii (사회연대당)', vice: 'Elena Morari', avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=300&q=80' }
-        },
-        lv: {
-          '13': { name: 'Janis Berzins', party: 'Progresīvie (진보동맹)', vice: 'Ieva Ozola', avatar: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=300&q=80' }
-        },
-        ky: {
-          '17': { name: 'Bakyt Asanov', party: 'Ata Meken (사회주의당)', vice: 'Ainura Sydykova', avatar: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&w=300&q=80' }
-        },
-        tg: {
-          '19': { name: 'Rustam Nabiev', party: 'Hizbi Demokrati (민주당)', vice: 'Zebo Karimova', avatar: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=300&q=80' }
-        },
-        hy: {
-          '25': { name: 'Armen Sargsyan', party: 'Dashnaktsutyun (사회연맹)', vice: 'Anahit Petrosyan', avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=300&q=80' }
-        },
-        tk: {
-          '23': { name: 'Murad Orazov', party: 'Agzybirlik (단결민주당)', vice: 'Guncha Berdiyeva', avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=300&q=80' }
-        },
-        et: {
-          '24': { name: 'Mart Laar Jr.', party: 'Isamaa (사회자유당)', vice: 'Kristiina Tamm', avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=300&q=80' }
+          '14': { name: 'Bohdan Hrytsenko', party: 'U-RADA (우크라이나 연합)', vice: 'Kateryna Polishchuk', avatar: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=300&q=80' },
+          '28': { name: 'Yaroslav Bondar', party: 'PTR (인민노동당)', vice: 'Maria Kovalenko', avatar: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=300&q=80' }
         }
       },
       sov_sup: {
@@ -859,9 +811,33 @@
       }
     };
 
-    // 상태 관리 변수
+    // 15개 모든 공화국에 pres_rep 기본 컨테이너 보장
+    Object.keys(SOVIET_REPUBLICS).forEach(code => {
+      if (!CANDIDATES_DB.pres_rep[code]) {
+        CANDIDATES_DB.pres_rep[code] = {
+          '11': { name: `후보 1 [${SOVIET_REPUBLICS[code].short}]`, party: 'PSD (사회민주당)', vice: '러닝메이트' },
+          '22': { name: `후보 2 [${SOVIET_REPUBLICS[code].short}]`, party: 'PTR (인민노동당)', vice: '러닝메이트' }
+        };
+      }
+    });
+
     let currentSovietLang = 'kk'; // 카자흐어 기본
-    let currentRepublicCode = 'kk'; // 현재 투표/관리 중인 공화국
+    let currentRepublicCode = 'kk'; // 현재 선택된 공화국 코드
+
+    // 사용자 커스텀 선거 단계 활성화 맵
+    let enabledRoles = {
+      sov_loc: true,
+      gov_reg: true,
+      pres_rep: true,
+      sov_sup: true,
+      pres_fed: true
+    };
+
+    function getActiveSequence() {
+      const active = SOVIET_SEQUENCE.filter(key => enabledRoles[key]);
+      return active.length > 0 ? active : [SOVIET_SEQUENCE[0]];
+    }
+
     let currentRoleKey = SOVIET_SEQUENCE[0];
     let typedNumber = '';
     let isWhiteVote = false;
@@ -870,7 +846,7 @@
     let currentUploadedCandPhoto = '';
     let currentUploadedVicePhoto = '';
 
-    // 투표 집계 객체 초기화 (공화국 대통령은 공화국별로 분리 집계)
+    // 투표 집계 객체 초기화
     let ELECTION_RESULTS = {};
     function initResults() {
       ELECTION_RESULTS = {};
@@ -887,19 +863,8 @@
     }
     initResults();
 
-    function getActiveCandidatesMap(roleKey) {
-      if (roleKey === 'pres_rep') {
-        if (!CANDIDATES_DB.pres_rep) CANDIDATES_DB.pres_rep = {};
-        if (!CANDIDATES_DB.pres_rep[currentRepublicCode]) CANDIDATES_DB.pres_rep[currentRepublicCode] = {};
-        return CANDIDATES_DB.pres_rep[currentRepublicCode];
-      }
-      if (!CANDIDATES_DB[roleKey]) CANDIDATES_DB[roleKey] = {};
-      return CANDIDATES_DB[roleKey];
-    }
-
     function getActiveResultObject(roleKey) {
       if (roleKey === 'pres_rep') {
-        if (!ELECTION_RESULTS.pres_rep) ELECTION_RESULTS.pres_rep = {};
         if (!ELECTION_RESULTS.pres_rep[currentRepublicCode]) {
           ELECTION_RESULTS.pres_rep[currentRepublicCode] = { votes: {}, branco: 0, nulo: 0, total: 0 };
         }
@@ -909,6 +874,19 @@
         ELECTION_RESULTS[roleKey] = { votes: {}, branco: 0, nulo: 0, total: 0 };
       }
       return ELECTION_RESULTS[roleKey];
+    }
+
+    function getActiveCandidatesMap(roleKey) {
+      if (roleKey === 'pres_rep') {
+        if (!CANDIDATES_DB.pres_rep[currentRepublicCode]) {
+          CANDIDATES_DB.pres_rep[currentRepublicCode] = {};
+        }
+        return CANDIDATES_DB.pres_rep[currentRepublicCode];
+      }
+      if (!CANDIDATES_DB[roleKey]) {
+        CANDIDATES_DB[roleKey] = {};
+      }
+      return CANDIDATES_DB[roleKey];
     }
 
     let audioCtx = null;
@@ -923,13 +901,13 @@
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
         osc.type = 'triangle';
-        osc.frequency.setValueAtTime(1380, audioCtx.currentTime);
+        osc.frequency.setValueAtTime(1420, audioCtx.currentTime);
         gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
         osc.connect(gain);
         gain.connect(audioCtx.destination);
         osc.start();
-        osc.stop(audioCtx.currentTime + 0.052);
+        osc.stop(audioCtx.currentTime + 0.055);
       } catch (e) {}
     }
 
@@ -940,13 +918,13 @@
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
         osc.type = 'square';
-        osc.frequency.setValueAtTime(960, now);
-        gain.gain.setValueAtTime(0.2, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.17);
+        osc.frequency.setValueAtTime(940, now);
+        gain.gain.setValueAtTime(0.22, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
         osc.connect(gain);
         gain.connect(audioCtx.destination);
         osc.start(now);
-        osc.stop(now + 0.18);
+        osc.stop(now + 0.19);
       } catch (e) {}
     }
 
@@ -954,12 +932,12 @@
       initAudio();
       try {
         const now = audioCtx.currentTime;
-        // 연속 숏 비프 5회
-        [0, 0.075, 0.15, 0.225, 0.30].forEach(t => {
+        const beeps = [0, 0.075, 0.15, 0.225, 0.30];
+        beeps.forEach(t => {
           const osc = audioCtx.createOscillator();
           const gain = audioCtx.createGain();
           osc.type = 'square';
-          osc.frequency.setValueAtTime(1180, now + t);
+          osc.frequency.setValueAtTime(1150, now + t);
           gain.gain.setValueAtTime(0.2, now + t);
           gain.gain.exponentialRampToValueAtTime(0.001, now + t + 0.045);
           osc.connect(gain);
@@ -968,29 +946,28 @@
           osc.stop(now + t + 0.048);
         });
 
-        // 서명 롱비프
-        const longStartTime = now + 0.38;
+        const longStartTime = now + 0.39;
         const oscLong = audioCtx.createOscillator();
-        const oscSub = audioCtx.createOscillator();
+        const oscLongSub = audioCtx.createOscillator();
         const gainLong = audioCtx.createGain();
 
         oscLong.type = 'square';
-        oscLong.frequency.setValueAtTime(860, longStartTime);
-        oscSub.type = 'sine';
-        oscSub.frequency.setValueAtTime(1720, longStartTime);
+        oscLong.frequency.setValueAtTime(840, longStartTime);
+        oscLongSub.type = 'sine';
+        oscLongSub.frequency.setValueAtTime(1680, longStartTime);
 
-        gainLong.gain.setValueAtTime(0.26, longStartTime);
-        gainLong.gain.setValueAtTime(0.26, longStartTime + 1.25);
+        gainLong.gain.setValueAtTime(0.25, longStartTime);
+        gainLong.gain.setValueAtTime(0.25, longStartTime + 1.25);
         gainLong.gain.linearRampToValueAtTime(0.001, longStartTime + 1.45);
 
         oscLong.connect(gainLong);
-        oscSub.connect(gainLong);
+        oscLongSub.connect(gainLong);
         gainLong.connect(audioCtx.destination);
 
         oscLong.start(longStartTime);
-        oscSub.start(longStartTime);
+        oscLongSub.start(longStartTime);
         oscLong.stop(longStartTime + 1.46);
-        oscSub.stop(longStartTime + 1.46);
+        oscLongSub.stop(longStartTime + 1.46);
       } catch (e) {}
     }
 
@@ -1008,18 +985,76 @@
       return SOVIET_I18N[currentSovietLang] || SOVIET_I18N.ru;
     }
 
+    function renderStageCheckboxes() {
+      const container = document.getElementById('stageCheckboxesContainer');
+      const activeList = getActiveSequence();
+      document.getElementById('activeStagesCountBadge').textContent = `${activeList.length}/${SOVIET_SEQUENCE.length} 활성`;
+      document.getElementById('seqVoteLabel').textContent = `${activeList.length}단계 연속 선거 진행`;
+
+      container.innerHTML = SOVIET_SEQUENCE.map((rKey, idx) => {
+        const isChecked = !!enabledRoles[rKey];
+        const rObj = SOVIET_ROLES[rKey];
+        const rName = (rObj.names && rObj.names[currentSovietLang]) ? rObj.names[currentSovietLang] : (rObj.names?.ru || rObj.id);
+        const repLabel = (rKey === 'pres_rep') ? ` [${SOVIET_REPUBLICS[currentRepublicCode]?.short || ''}]` : '';
+
+        return `
+          <label class="flex items-center justify-between px-2.5 py-1.5 bg-white hover:bg-stone-100 rounded-lg border ${isChecked ? 'border-stone-300 shadow-xs' : 'border-dashed border-stone-200 opacity-60'} cursor-pointer select-none text-[11px] transition">
+            <div class="flex items-center gap-2 truncate">
+              <input type="checkbox" class="stage-toggle rounded text-emerald-700 focus:ring-emerald-600 w-3.5 h-3.5 cursor-pointer" data-role="${rKey}" ${isChecked ? 'checked' : ''} />
+              <span class="font-medium text-stone-800 truncate">${idx + 1}. ${rName}${repLabel}</span>
+            </div>
+            <span class="text-[9.5px] font-mono px-1.5 py-0.2 rounded font-bold ${isChecked ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' : 'bg-stone-100 text-stone-400'}">${rObj.digits}자리</span>
+          </label>
+        `;
+      }).join('');
+
+      container.querySelectorAll('.stage-toggle').forEach(input => {
+        input.addEventListener('change', (e) => {
+          const rKey = e.target.getAttribute('data-role');
+          const isNowChecked = e.target.checked;
+          
+          if (!isNowChecked) {
+            const willRemaining = SOVIET_SEQUENCE.filter(k => (k === rKey ? false : enabledRoles[k]));
+            if (willRemaining.length === 0) {
+              e.target.checked = true;
+              showToast('최소 한 개의 선거 단계는 선택되어 있어야 합니다.');
+              return;
+            }
+          }
+
+          enabledRoles[rKey] = isNowChecked;
+          const activeSeq = getActiveSequence();
+
+          if (!enabledRoles[currentRoleKey]) {
+            currentRoleKey = activeSeq[0];
+          }
+
+          renderStageCheckboxes();
+          updateRoleDropdown();
+          syncRoleUi();
+          renderCandidateList();
+          renderScreen();
+
+          const rObj = SOVIET_ROLES[rKey];
+          const rName = (rObj.names && rObj.names[currentSovietLang]) ? rObj.names[currentSovietLang] : rKey;
+          showToast(`선거 단계 [${rName}] ${isNowChecked ? '포함됨' : '제외됨'}`);
+        });
+      });
+    }
+
     function renderScreen() {
       const screen = document.getElementById('screenContent');
       const footerPrompt = document.getElementById('screenFooterPrompt');
       const tabsContainer = document.getElementById('topTabsContainer');
       const role = SOVIET_ROLES[currentRoleKey];
       const t = getTexts();
+      const activeSequence = getActiveSequence();
 
       document.getElementById('machineHeaderLabel').textContent = t.header;
       document.getElementById('screenTrainingBadge').textContent = t.training;
 
-      // 상단 탭 렌더링
-      tabsContainer.innerHTML = SOVIET_SEQUENCE.map(k => {
+      // 상단 탭 렌더링 (활성화된 단계만 표시)
+      tabsContainer.innerHTML = activeSequence.map(k => {
         const isActive = (k === currentRoleKey);
         const rObj = SOVIET_ROLES[k];
         const tabLabel = (rObj.shortTabs && rObj.shortTabs[currentSovietLang]) 
@@ -1027,7 +1062,7 @@
           : (rObj.shortTabs?.ru || rObj.shortTabs?.ko);
 
         return `
-          <button type="button" class="tab-btn px-2 py-0.5 text-[8.5px] sm:text-[9.5px] font-soviet-screen tracking-tight transition cursor-pointer select-none border-b-2 ${isActive ? 'bg-[#1e231e] text-amber-200 font-bold border-amber-400 shadow-sm' : 'bg-[#bfc6b8] hover:bg-[#aeb6a6] text-[#2c3328] font-medium border-transparent'}" data-role="${k}">
+          <button type="button" class="tab-btn px-2 py-0.5 text-[8.5px] sm:text-[9.5px] font-soviet-screen tracking-tight transition cursor-pointer select-none border-b-2 ${isActive ? 'bg-[#1b201a] text-amber-200 font-bold border-amber-400 shadow-sm' : 'bg-[#bfc6b8] hover:bg-[#aeb6a6] text-[#2c3328] font-medium border-transparent'}" data-role="${k}">
             ${tabLabel}
           </button>
         `;
@@ -1040,13 +1075,13 @@
         });
       });
 
-      // 1. 투표 완료 화면 (FIM / VOTOU)
+      // 1. 투표 완료 화면 (FIM / СОҢЫ)
       if (isFinished) {
         footerPrompt.style.display = 'none';
         screen.innerHTML = `
           <div class="flex-1 flex flex-col items-center justify-center relative">
             <h1 class="scale-text-fim font-black tracking-normal text-stone-950 font-soviet-screen leading-none">${t.fim}</h1>
-            <div class="absolute bottom-2 right-2 scale-text-sm font-semibold tracking-wider text-stone-700 uppercase font-soviet-screen">
+            <div class="absolute bottom-2 right-2 scale-text-sm font-semibold tracking-wider text-stone-800 uppercase font-soviet-screen">
               ${t.votou}
             </div>
           </div>
@@ -1056,14 +1091,17 @@
 
       footerPrompt.style.display = 'block';
       footerPrompt.innerHTML = `
-        <div class="font-normal text-stone-800">${t.pressKey}</div>
+        <div class="font-normal text-stone-900">${t.pressKey}</div>
         <div class="pl-2">
-          <div><strong class="font-bold text-stone-900">ВВОД</strong> ${t.confirmPrompt}</div>
-          <div><strong class="font-bold text-stone-900">СБРОС</strong> ${t.corrigePrompt}</div>
+          <div><strong class="font-bold text-stone-950">ВВОД (CONFIRMA)</strong> ${t.confirmPrompt}</div>
+          <div><strong class="font-bold text-stone-950">СБРОС (CORRIGE)</strong> ${t.corrigePrompt}</div>
         </div>
       `;
 
-      const roleDisplayName = (role.names && role.names[currentSovietLang]) ? role.names[currentSovietLang] : (role.names?.ru || role.id);
+      let roleDisplayName = (role.names && role.names[currentSovietLang]) ? role.names[currentSovietLang] : (role.names?.ru || role.id);
+      if (currentRoleKey === 'pres_rep') {
+        roleDisplayName += ` [${SOVIET_REPUBLICS[currentRepublicCode]?.short || ''}]`;
+      }
       const viceLabel = (role.viceLabels && role.viceLabels[currentSovietLang]) ? role.viceLabels[currentSovietLang] : (role.viceLabels?.ru || 'Вице');
 
       // 2. 백지 투표 (VOTO EM BRANCO)
@@ -1071,10 +1109,8 @@
         screen.innerHTML = `
           <div class="flex-1 flex flex-col justify-between py-1.5 font-soviet-screen">
             <div>
-              <div class="scale-text-xs uppercase text-stone-700 font-normal">${t.yourVoteFor}</div>
-              <h2 class="scale-text-xl font-bold text-stone-900 tracking-tight leading-tight mt-0.5">
-                ${roleDisplayName} ${role.id === 'pres_rep' ? `<span class="text-xs text-emerald-800 font-mono">(${SOVIET_REPUBLICS[currentRepublicCode]?.short || ''})</span>` : ''}
-              </h2>
+              <div class="scale-text-xs uppercase tracking-normal text-stone-800 font-normal">${t.yourVoteFor}</div>
+              <h2 class="scale-text-xl font-bold text-stone-950 tracking-tight leading-tight mt-0.5">${roleDisplayName}</h2>
             </div>
             
             <div class="py-5 text-center">
@@ -1084,16 +1120,16 @@
             </div>
 
             <div class="text-center py-1">
-              <span class="scale-text-base font-bold text-stone-900 text-blink">${t.checkVote}</span>
+              <span class="scale-text-base font-bold text-stone-950 text-blink">${t.checkVote}</span>
             </div>
           </div>
         `;
         return;
       }
 
-      // 3. 일반 후보자 번호 입력 및 상세 레이아웃
-      const candidates = getActiveCandidatesMap(currentRoleKey);
-      const candidate = candidates[typedNumber] || null;
+      // 3. 일반 후보자 번호/정보 레이아웃
+      const candidatesMap = getActiveCandidatesMap(currentRoleKey);
+      const candidate = candidatesMap[typedNumber] || null;
       const isCompleteNumber = typedNumber.length === role.digits;
       const isNullVote = isCompleteNumber && !candidate;
 
@@ -1101,54 +1137,52 @@
       for (let i = 0; i < role.digits; i++) {
         const char = typedNumber[i] || '';
         const isCurrent = (i === typedNumber.length);
-        const activeClass = isCurrent ? 'border-[2px] border-stone-950 cursor-active' : 'border border-stone-500';
+        const activeClass = isCurrent ? 'border-[1.8px] border-stone-950 cursor-active' : 'border border-stone-600';
         boxesHtml += `
-          <div class="w-6 h-8 sm:w-7 sm:h-9 bg-white/95 flex items-center justify-center scale-text-2xl font-bold text-stone-950 font-soviet-screen ${activeClass}">
+          <div class="w-6 h-8 sm:w-7 sm:h-9 bg-[#eef3e2] flex items-center justify-center scale-text-2xl font-bold text-stone-950 font-soviet-screen ${activeClass}">
             ${char}
           </div>
         `;
       }
 
-      const aspectClass = (currentPhotoRatio === '4:5') ? 'aspect-[4/5] w-[86px] sm:w-[98px]' : 'aspect-[3/4] w-[82px] sm:w-[94px]';
+      const aspectClass = (currentPhotoRatio === '4:5') ? 'aspect-[4/5] w-[84px] sm:w-[96px]' : 'aspect-[3/4] w-[80px] sm:w-[92px]';
 
       let photoSectionHtml = '';
       if (candidate) {
         photoSectionHtml = `
           <div class="flex flex-col items-center">
-            <div class="${aspectClass} bg-stone-200 border-[1.5px] border-stone-800 rounded-xs overflow-hidden shadow-xs relative">
-              ${candidate.avatar ? `<img src="${candidate.avatar}" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='https://placehold.co/120x150/d6ded0/333333?text=Foto';" />` : `<div class="w-full h-full flex items-center justify-center text-3xl">👤</div>`}
+            <div class="${aspectClass} bg-stone-300 border-[1.5px] border-stone-900 rounded-xs overflow-hidden shadow-xs relative">
+              ${candidate.avatar ? `<img src="${candidate.avatar}" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='https://placehold.co/120x150/dbe2d8/333333?text=Foto';" />` : `<div class="w-full h-full flex items-center justify-center text-3xl">👤</div>`}
             </div>
 
             ${role.hasVice && candidate.vice ? `
-              <div class="w-14 aspect-[3/4] bg-stone-200 border border-stone-700 rounded-xs overflow-hidden shadow-xs relative mt-1">
-                ${candidate.viceAvatar ? `<img src="${candidate.viceAvatar}" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='https://placehold.co/100x133/d6ded0/333333?text=Vice';" />` : `<div class="w-full h-full flex items-center justify-center text-sm">👥</div>`}
-                <span class="absolute bottom-0 inset-x-0 bg-stone-900/85 text-[6.5px] text-white text-center py-0.5 font-bold uppercase font-soviet-screen">${viceLabel}</span>
+              <div class="w-14 aspect-[3/4] bg-stone-300 border border-stone-800 rounded-xs overflow-hidden shadow-xs relative mt-1">
+                ${candidate.viceAvatar ? `<img src="${candidate.viceAvatar}" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='https://placehold.co/100x133/dbe2d8/333333?text=Vice';" />` : `<div class="w-full h-full flex items-center justify-center text-sm">👥</div>`}
+                <span class="absolute bottom-0 inset-x-0 bg-stone-950/90 text-[6.5px] text-white text-center py-0.5 font-bold uppercase font-soviet-screen">${viceLabel}</span>
               </div>
             ` : ''}
           </div>
         `;
       } else {
         photoSectionHtml = `
-          <div class="${aspectClass} bg-stone-200/50 border border-stone-400 rounded-xs flex flex-col items-center justify-center text-stone-400 text-xs">
+          <div class="${aspectClass} bg-[#cad2be]/70 border border-stone-600 rounded-xs flex flex-col items-center justify-center text-stone-600 text-xs">
             <span class="text-2xl opacity-40">👤</span>
           </div>
         `;
       }
 
       screen.innerHTML = `
-        <div class="flex-1 flex flex-col justify-between text-stone-900 py-1 font-soviet-screen">
+        <div class="flex-1 flex flex-col justify-between text-stone-950 py-1 font-soviet-screen">
           <div class="flex justify-between items-start">
             <div class="space-y-1 flex-1 pr-1">
               <div>
-                <div class="scale-text-xs uppercase text-stone-700 font-normal">${t.yourVoteFor}</div>
-                <h2 class="scale-text-xl font-bold text-stone-950 tracking-tight leading-tight">
-                  ${roleDisplayName} ${role.id === 'pres_rep' ? `<span class="text-xs text-emerald-800 font-mono font-bold">(${SOVIET_REPUBLICS[currentRepublicCode]?.short || ''})</span>` : ''}
-                </h2>
+                <div class="scale-text-xs uppercase text-stone-800 font-normal">${t.yourVoteFor}</div>
+                <h2 class="scale-text-xl font-bold text-stone-950 tracking-tight leading-tight">${roleDisplayName}</h2>
               </div>
 
               <!-- 번호 입력 박스 -->
               <div class="flex items-center gap-2 pt-1">
-                <span class="scale-text-sm font-normal text-stone-800">${t.number}</span>
+                <span class="scale-text-sm font-normal text-stone-900">${t.number}</span>
                 <div class="flex gap-1">
                   ${boxesHtml}
                 </div>
@@ -1158,31 +1192,31 @@
               <div class="space-y-0.5 pt-1 scale-text-sm">
                 ${candidate ? `
                   <div class="flex items-baseline gap-2">
-                    <span class="text-stone-700 font-normal scale-text-sm w-14 shrink-0">${t.name}</span>
+                    <span class="text-stone-800 font-normal scale-text-sm w-12 shrink-0">${t.name}</span>
                     <span class="text-stone-950 font-bold scale-text-sm tracking-tight truncate">${candidate.name}</span>
                   </div>
                   <div class="flex items-baseline gap-2">
-                    <span class="text-stone-700 font-normal scale-text-sm w-14 shrink-0">${t.party}</span>
+                    <span class="text-stone-800 font-normal scale-text-sm w-12 shrink-0">${t.party}</span>
                     <span class="text-stone-950 font-bold scale-text-sm tracking-tight">${candidate.party}</span>
                   </div>
                   ${candidate.vice ? `
                     <div class="flex items-baseline gap-2">
-                      <span class="text-stone-700 font-normal scale-text-xs shrink-0">${viceLabel}:</span>
+                      <span class="text-stone-800 font-normal scale-text-xs shrink-0">${viceLabel}:</span>
                       <span class="text-stone-950 font-bold scale-text-xs tracking-tight truncate">${candidate.vice}</span>
                     </div>
                   ` : ''}
                 ` : `
                   <div class="flex items-baseline gap-2 opacity-0">
-                    <span class="w-14">${t.name}</span> <span>-</span>
+                    <span class="w-12">${t.name}</span> <span>-</span>
                   </div>
                   <div class="flex items-baseline gap-2 opacity-0">
-                    <span class="w-14">${t.party}</span> <span>-</span>
+                    <span class="w-12">${t.party}</span> <span>-</span>
                   </div>
                 `}
 
                 ${isNullVote ? `
                   <div class="pt-1">
-                    <div class="scale-text-xs text-rose-700 font-bold uppercase tracking-wider">${t.wrongNumber}</div>
+                    <div class="scale-text-xs text-red-800 font-bold uppercase tracking-wider">${t.wrongNumber}</div>
                     <div class="scale-text-lg font-black text-stone-950 tracking-wide text-blink">${t.nullVote}</div>
                   </div>
                 ` : ''}
@@ -1207,12 +1241,18 @@
 
     function updateRoleDropdown() {
       const select = document.getElementById('roleSelector');
-      select.innerHTML = SOVIET_SEQUENCE.map((rKey, idx) => {
+      const activeSequence = getActiveSequence();
+      
+      select.innerHTML = activeSequence.map((rKey, idx) => {
         const rObj = SOVIET_ROLES[rKey];
         const rName = (rObj.names && rObj.names[currentSovietLang]) ? rObj.names[currentSovietLang] : (rObj.names?.ru || rObj.id);
         const repSuffix = (rKey === 'pres_rep') ? ` [${SOVIET_REPUBLICS[currentRepublicCode]?.short || ''}]` : '';
         return `<option value="${rKey}">${idx + 1}. ${rName}${repSuffix} (${rObj.digits}자리)</option>`;
       }).join('');
+
+      if (!enabledRoles[currentRoleKey]) {
+        currentRoleKey = activeSequence[0];
+      }
       select.value = currentRoleKey;
     }
 
@@ -1227,6 +1267,7 @@
       repSelect.addEventListener('change', (e) => {
         currentRepublicCode = e.target.value;
         document.getElementById('activeRepBadge').textContent = SOVIET_REPUBLICS[currentRepublicCode].short;
+        renderStageCheckboxes();
         renderCandidateList();
         renderScreen();
         updateRoleDropdown();
@@ -1239,21 +1280,18 @@
       document.getElementById('viceContainer').style.display = role.hasVice ? 'flex' : 'none';
       const candNumInput = document.getElementById('newCandNumber');
       candNumInput.maxLength = role.digits;
-      candNumInput.placeholder = `${role.digits}자리 번호`;
+      candNumInput.placeholder = `${role.digits}자리`;
 
-      // 공화국 대통령일 경우 공화국 전환 UI 노출
-      const repWrap = document.getElementById('republicSelectorWrap');
-      if (role.id === 'pres_rep') {
+      const repWrap = document.getElementById('republicSelectWrap');
+      if (currentRoleKey === 'pres_rep') {
         repWrap.classList.remove('hidden');
-        document.getElementById('republicSelect').value = currentRepublicCode;
-        document.getElementById('activeRepBadge').textContent = SOVIET_REPUBLICS[currentRepublicCode].short;
       } else {
         repWrap.classList.add('hidden');
       }
     }
 
     function switchRole(roleKey) {
-      if (!SOVIET_ROLES[roleKey]) return;
+      if (!SOVIET_ROLES[roleKey] || !enabledRoles[roleKey]) return;
       currentRoleKey = roleKey;
       isFinished = false;
       typedNumber = '';
@@ -1268,26 +1306,6 @@
       const rName = (rObj.names && rObj.names[currentSovietLang]) ? rObj.names[currentSovietLang] : (rObj.names?.ru || rObj.id);
       showToast(`${rName} 투표 단계로 전환되었습니다.`);
     }
-
-    // 언어 및 하단 공화국 선택 변경
-    document.getElementById('quickLangSelect').addEventListener('change', (e) => {
-      currentSovietLang = e.target.value;
-      // 언어 선택이 공화국 코드와 일치하는 경우 활성 공화국도 자동 동기화
-      if (SOVIET_REPUBLICS[currentSovietLang]) {
-        currentRepublicCode = currentSovietLang;
-        document.getElementById('republicSelect').value = currentRepublicCode;
-        document.getElementById('activeRepBadge').textContent = SOVIET_REPUBLICS[currentRepublicCode].short;
-      }
-      updateRoleDropdown();
-      syncRoleUi();
-      renderCandidateList();
-      renderScreen();
-      showToast(`화면 언어가 [${e.target.options[e.target.selectedIndex].text}] 로 변경되었습니다.`);
-    });
-
-    document.getElementById('roleSelector').addEventListener('change', (e) => {
-      switchRole(e.target.value);
-    });
 
     function handleDigit(numStr) {
       if (isFinished || isWhiteVote) return;
@@ -1342,12 +1360,13 @@
         }
 
         const isSequential = document.getElementById('seqVoteToggle').checked;
-        const currentIdx = SOVIET_SEQUENCE.indexOf(currentRoleKey);
-        const hasNext = isSequential && currentIdx < SOVIET_SEQUENCE.length - 1;
+        const activeSequence = getActiveSequence();
+        const currentIdx = activeSequence.indexOf(currentRoleKey);
+        const hasNext = isSequential && currentIdx >= 0 && currentIdx < activeSequence.length - 1;
 
         if (hasNext) {
           playStepConfirmTone();
-          const nextRole = SOVIET_SEQUENCE[currentIdx + 1];
+          const nextRole = activeSequence[currentIdx + 1];
           currentRoleKey = nextRole;
           typedNumber = '';
           isWhiteVote = false;
@@ -1366,7 +1385,8 @@
           playFimTone();
 
           setTimeout(() => {
-            currentRoleKey = SOVIET_SEQUENCE[0];
+            const firstActive = getActiveSequence()[0];
+            currentRoleKey = firstActive;
             document.getElementById('roleSelector').value = currentRoleKey;
             resetVoteScreen();
           }, 3600);
@@ -1391,8 +1411,7 @@
       countElem.textContent = `${keys.length}명`;
 
       if (keys.length === 0) {
-        const repName = (currentRoleKey === 'pres_rep') ? ` [${SOVIET_REPUBLICS[currentRepublicCode]?.short}]` : '';
-        container.innerHTML = `<div class="text-xs text-stone-400 text-center py-3 bg-stone-50 rounded-lg">등록된${repName} 후보가 없습니다.</div>`;
+        container.innerHTML = `<div class="text-[11px] text-stone-400 text-center py-2.5 bg-stone-50 rounded-lg border border-dashed border-stone-200">등록된 후보가 없습니다.</div>`;
         return;
       }
 
@@ -1400,16 +1419,16 @@
         const c = candidates[num];
         return `
           <div class="flex items-center justify-between p-2 bg-stone-50 hover:bg-stone-100 rounded-lg border border-stone-200 transition">
-            <div class="flex items-center gap-2.5 overflow-hidden">
-              <div class="w-8 h-10 bg-stone-200 rounded overflow-hidden shrink-0 flex items-center justify-center text-xs">
-                ${c.avatar ? `<img src="${c.avatar}" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='https://placehold.co/50x65/d6ded0/555?text=X';"/>` : '👤'}
+            <div class="flex items-center gap-2 overflow-hidden">
+              <div class="w-7 h-9 bg-stone-200 rounded overflow-hidden shrink-0 flex items-center justify-center text-xs border border-stone-300">
+                ${c.avatar ? `<img src="${c.avatar}" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='https://placehold.co/50x65/eee/888?text=X';"/>` : '👤'}
               </div>
               <div class="min-w-0">
                 <div class="text-xs font-bold text-stone-800 truncate">${c.name} <span class="text-stone-500 font-normal">(${c.party})</span> - <span class="text-emerald-700 font-mono font-bold">${num}</span></div>
-                ${c.vice ? `<div class="text-[10px] text-stone-500 truncate">러닝메이트: ${c.vice}</div>` : ''}
+                ${c.vice ? `<div class="text-[9.5px] text-stone-500 truncate">부후보: ${c.vice}</div>` : ''}
               </div>
             </div>
-            <button class="delete-cand-btn text-rose-500 hover:text-rose-700 hover:bg-rose-50 p-1.5 rounded text-sm font-bold transition shrink-0 ml-1" data-num="${num}" title="후보 삭제">
+            <button class="delete-cand-btn text-rose-500 hover:text-rose-700 hover:bg-rose-50 p-1 rounded text-xs font-bold transition shrink-0 ml-1" data-num="${num}" title="후보 삭제">
               ✕
             </button>
           </div>
@@ -1419,14 +1438,18 @@
       container.querySelectorAll('.delete-cand-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
           const num = e.currentTarget.getAttribute('data-num');
-          const candMap = getActiveCandidatesMap(currentRoleKey);
-          delete candMap[num];
+          const map = getActiveCandidatesMap(currentRoleKey);
+          delete map[num];
           renderCandidateList();
           renderScreen();
-          showToast(`후보 [${num}] 이(가) 삭제되었습니다.`);
+          showToast(`후보 [${num}] 가 삭제되었습니다.`);
         });
       });
     }
+
+    document.getElementById('roleSelector').addEventListener('change', (e) => {
+      switchRole(e.target.value);
+    });
 
     // 사진 비율 버튼
     const btnRatio34 = document.getElementById('btnRatio34');
@@ -1434,21 +1457,21 @@
 
     btnRatio34.addEventListener('click', () => {
       currentPhotoRatio = '3:4';
-      btnRatio34.className = 'px-1.5 py-0.5 font-bold rounded bg-emerald-700 text-white transition';
-      btnRatio45.className = 'px-1.5 py-0.5 font-bold rounded text-stone-600 hover:text-stone-900 transition';
+      btnRatio34.className = 'px-1.5 py-0.2 font-bold rounded bg-emerald-700 text-white transition';
+      btnRatio45.className = 'px-1.5 py-0.2 font-bold rounded text-stone-600 hover:text-stone-900 transition';
       renderScreen();
       showToast('후보자 사진 비율이 3:4 로 설정되었습니다.');
     });
 
     btnRatio45.addEventListener('click', () => {
       currentPhotoRatio = '4:5';
-      btnRatio45.className = 'px-1.5 py-0.5 font-bold rounded bg-emerald-700 text-white transition';
-      btnRatio34.className = 'px-1.5 py-0.5 font-bold rounded text-stone-600 hover:text-stone-900 transition';
+      btnRatio45.className = 'px-1.5 py-0.2 font-bold rounded bg-emerald-700 text-white transition';
+      btnRatio34.className = 'px-1.5 py-0.2 font-bold rounded text-stone-600 hover:text-stone-900 transition';
       renderScreen();
       showToast('후보자 사진 비율이 4:5 로 설정되었습니다.');
     });
 
-    // 🎲 번호 생성
+    // 주사위 랜덤 번호 생성
     document.getElementById('btnGenNumber').addEventListener('click', () => {
       const role = SOVIET_ROLES[currentRoleKey];
       const digits = role.digits;
@@ -1463,17 +1486,17 @@
       } while (candidates[generated] && attempts < 100);
 
       document.getElementById('newCandNumber').value = generated;
-      showToast(`랜덤 기호 ${generated} 이(가) 생성되었습니다.`);
+      showToast(`랜덤 번호 ${generated} 이(가) 생성되었습니다.`);
     });
 
     function applyCandidateImage(src, isVice = false) {
       if (isVice) {
         currentUploadedVicePhoto = src;
-        document.getElementById('vicePhotoPreviewWrap').innerHTML = `<img src="${src}" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='https://placehold.co/100x133/d6ded0/555?text=Vice';"/>`;
-        showToast('부통령(러닝메이트) 사진이 적용되었습니다.');
+        document.getElementById('vicePhotoPreviewWrap').innerHTML = `<img src="${src}" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='https://placehold.co/100x133/dbe2d8/333333?text=Vice';"/>`;
+        showToast('부후보 사진이 적용되었습니다.');
       } else {
         currentUploadedCandPhoto = src;
-        document.getElementById('candPhotoPreviewWrap').innerHTML = `<img src="${src}" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='https://placehold.co/120x150/d6ded0/555?text=Foto';"/>`;
+        document.getElementById('candPhotoPreviewWrap').innerHTML = `<img src="${src}" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='https://placehold.co/120x150/dbe2d8/333333?text=Foto';"/>`;
         showToast('후보자 사진이 적용되었습니다.');
       }
     }
@@ -1513,11 +1536,18 @@
 
         const droppedText = dt.getData('text/uri-list') || dt.getData('text/plain') || dt.getData('text/html');
         if (droppedText) {
+          let foundUrl = '';
           const urlMatch = droppedText.match(/https?:\/\/[^\s"'<>]+/i);
-          const foundUrl = urlMatch ? urlMatch[0] : (droppedText.startsWith('http') ? droppedText.trim() : '');
+          if (urlMatch) {
+            foundUrl = urlMatch[0];
+          } else if (droppedText.startsWith('http')) {
+            foundUrl = droppedText.trim();
+          }
+
           if (foundUrl) {
             urlInput.value = foundUrl;
             applyCandidateImage(foundUrl, isVice);
+            return;
           }
         }
       });
@@ -1533,14 +1563,16 @@
 
       urlInput.addEventListener('input', (e) => {
         const url = e.target.value.trim();
-        if (url) applyCandidateImage(url, isVice);
+        if (url) {
+          applyCandidateImage(url, isVice);
+        }
       });
     }
 
     setupDropZone('candDropZone', 'candPhotoFile', 'candPhotoUrl', false);
     setupDropZone('viceDropZone', 'vicePhotoFile', 'vicePhotoUrl', true);
 
-    // 후보 추가 리스너
+    // 후보 추가
     document.getElementById('btnAddCandidate').addEventListener('click', () => {
       const role = SOVIET_ROLES[currentRoleKey];
       const name = document.getElementById('newCandName').value.trim();
@@ -1550,14 +1582,20 @@
       const viceName = document.getElementById('newViceName').value.trim();
       const vicePhotoUrl = document.getElementById('vicePhotoUrl').value.trim();
 
-      if (!name) { showToast('후보자 이름을 입력해주세요.'); return; }
-      if (!party) { showToast('소속 정당을 입력해주세요.'); return; }
+      if (!name) {
+        showToast('후보자 이름을 입력해주세요.');
+        return;
+      }
+      if (!party) {
+        showToast('정당명을 입력해주세요.');
+        return;
+      }
       if (!number || number.length !== role.digits || isNaN(number)) {
         showToast(`번호는 정확히 ${role.digits}자리 숫자여야 합니다.`);
         return;
       }
 
-      const avatar = currentUploadedCandPhoto || photoUrl || `https://placehold.co/200x250/2d3529/ffffff?text=${encodeURIComponent(name.charAt(0))}`;
+      const avatar = currentUploadedCandPhoto || photoUrl || `https://placehold.co/200x250/2d332d/ffffff?text=${encodeURIComponent(name.charAt(0))}`;
       const viceAvatar = currentUploadedVicePhoto || vicePhotoUrl || '';
 
       const candidatesMap = getActiveCandidatesMap(currentRoleKey);
@@ -1582,8 +1620,22 @@
 
       renderCandidateList();
       renderScreen();
-      const repLabel = (currentRoleKey === 'pres_rep') ? ` [${SOVIET_REPUBLICS[currentRepublicCode]?.short}]` : '';
-      showToast(`기호 ${number}번 [${name}] 후보가${repLabel}에 등록되었습니다!`);
+      showToast(`기호 ${number}번 [${name}] 후보가 등록되었습니다!`);
+    });
+
+    document.getElementById('quickLangSelect').addEventListener('change', (e) => {
+      currentSovietLang = e.target.value;
+      if (SOVIET_REPUBLICS[currentSovietLang]) {
+        currentRepublicCode = currentSovietLang;
+        document.getElementById('republicSelect').value = currentRepublicCode;
+        document.getElementById('activeRepBadge').textContent = SOVIET_REPUBLICS[currentRepublicCode].short;
+      }
+      renderStageCheckboxes();
+      updateRoleDropdown();
+      syncRoleUi();
+      renderCandidateList();
+      renderScreen();
+      showToast(`화면 언어가 [${e.target.options[e.target.selectedIndex].text}] 로 변경되었습니다.`);
     });
 
     document.getElementById('btnExportCandidates').addEventListener('click', () => {
@@ -1591,6 +1643,7 @@
         app: "Soviet-Urna-EVM2026",
         sovietLanguage: currentSovietLang,
         republicCode: currentRepublicCode,
+        enabledRoles: enabledRoles,
         exportedAt: new Date().toISOString(),
         candidates: CANDIDATES_DB,
         results: ELECTION_RESULTS
@@ -1630,6 +1683,10 @@
               document.getElementById('activeRepBadge').textContent = SOVIET_REPUBLICS[currentRepublicCode].short;
             }
 
+            if (parsed.enabledRoles && typeof parsed.enabledRoles === 'object') {
+              enabledRoles = { ...enabledRoles, ...parsed.enabledRoles };
+            }
+
             if (parsed.candidates) {
               CANDIDATES_DB = parsed.candidates;
               if (parsed.results) {
@@ -1648,6 +1705,7 @@
               CANDIDATES_DB = parsed;
             }
 
+            renderStageCheckboxes();
             updateRoleDropdown();
             syncRoleUi();
             renderCandidateList();
@@ -1678,135 +1736,68 @@
     document.getElementById('btnViewResults').addEventListener('click', () => {
       const content = document.getElementById('modalResultContent');
       let html = '';
+      const activeSequence = getActiveSequence();
 
-      SOVIET_SEQUENCE.forEach(rKey => {
+      activeSequence.forEach(rKey => {
         const role = SOVIET_ROLES[rKey];
-        const rName = (role.names && role.names[currentSovietLang]) ? role.names[currentSovietLang] : (role.names?.ru || role.id);
-
+        const res = getActiveResultObject(rKey);
+        const cands = getActiveCandidatesMap(rKey);
+        let rName = (role.names && role.names[currentSovietLang]) ? role.names[currentSovietLang] : (role.names?.ru || rKey);
         if (rKey === 'pres_rep') {
-          // 공화국 대통령은 15개 공화국별로 결과 렌더링
-          const repObj = SOVIET_REPUBLICS[currentRepublicCode];
-          const res = getActiveResultObject('pres_rep');
-          const cands = getActiveCandidatesMap('pres_rep');
+          rName += ` [${SOVIET_REPUBLICS[currentRepublicCode]?.name || ''}]`;
+        }
 
-          html += `
-            <div class="border border-emerald-300 rounded-xl p-3.5 bg-emerald-50/50">
-              <div class="flex justify-between items-center border-b border-emerald-200 pb-2 mb-2">
-                <div>
-                  <span class="font-black text-emerald-950 text-sm">${rName}</span>
-                  <span class="text-xs text-emerald-700 font-bold ml-1">(${repObj.name})</span>
-                </div>
-                <span class="text-xs font-bold bg-white px-2 py-0.5 rounded text-emerald-900 border border-emerald-200 font-mono">총: ${res.total}표</span>
-              </div>
-              <div class="space-y-1.5 text-xs">
-          `;
+        html += `
+          <div class="border border-stone-200 rounded-xl p-3 bg-stone-50/80">
+            <div class="flex justify-between items-center border-b border-stone-200 pb-1.5 mb-2">
+              <span class="font-bold text-stone-800 text-sm">${rName}</span>
+              <span class="text-[10px] font-mono font-bold bg-stone-200 px-2 py-0.5 rounded text-stone-700">총 투표: ${res.total}표</span>
+            </div>
+            
+            <div class="space-y-1.5 text-xs">
+        `;
 
-          if (res.total === 0) {
-            html += `<div class="text-stone-400 py-1 text-center">현재 공화국에 투표된 기록이 없습니다.</div>`;
-          } else {
-            Object.keys(cands).forEach(num => {
-              const cand = cands[num];
-              const voteCount = res.votes[num] || 0;
-              const pct = res.total > 0 ? ((voteCount / res.total) * 100).toFixed(1) : 0;
-              html += `
-                <div>
-                  <div class="flex justify-between text-stone-700 font-semibold">
-                    <span>[${num}] ${cand.name} (${cand.party})</span>
-                    <span class="font-mono text-emerald-800 font-bold">${voteCount}표 (${pct}%)</span>
-                  </div>
-                  <div class="w-full bg-stone-200 rounded-full h-1.5 mt-1 overflow-hidden">
-                    <div class="bg-emerald-700 h-1.5 rounded-full" style="width: ${pct}%"></div>
-                  </div>
-                </div>
-              `;
-            });
-
-            const brancoPct = ((res.branco / res.total) * 100).toFixed(1);
-            html += `
-              <div class="pt-1 border-t border-stone-200 mt-2">
-                <div class="flex justify-between text-stone-600 font-medium">
-                  <span>ЧИСТЫЙ БЮЛЛЕТЕНЬ (백지표)</span>
-                  <span class="font-mono">${res.branco}표 (${brancoPct}%)</span>
-                </div>
-              </div>
-            `;
-
-            const nuloPct = ((res.nulo / res.total) * 100).toFixed(1);
+        if (res.total === 0) {
+          html += `<div class="text-stone-400 py-1 text-center text-[11px]">아직 투표된 기록이 없습니다.</div>`;
+        } else {
+          Object.keys(cands).forEach(num => {
+            const cand = cands[num];
+            const voteCount = res.votes[num] || 0;
+            const pct = res.total > 0 ? ((voteCount / res.total) * 100).toFixed(1) : 0;
             html += `
               <div>
-                <div class="flex justify-between text-rose-600 font-medium">
-                  <span>НЕДЕЙСТВИТЕЛЬНЫЙ (무효표)</span>
-                  <span class="font-mono">${res.nulo}표 (${nuloPct}%)</span>
+                <div class="flex justify-between text-stone-700 font-semibold text-[11px]">
+                  <span>[${num}] ${cand.name} (${cand.party})</span>
+                  <span class="font-mono">${voteCount}표 (${pct}%)</span>
+                </div>
+                <div class="w-full bg-stone-200 rounded-full h-1.5 mt-0.5 overflow-hidden">
+                  <div class="bg-emerald-700 h-1.5 rounded-full" style="width: ${pct}%"></div>
                 </div>
               </div>
             `;
-          }
+          });
 
+          const brancoPct = ((res.branco / res.total) * 100).toFixed(1);
           html += `
-              </div>
+            <div class="pt-1 border-t border-stone-200 mt-1.5 flex justify-between text-stone-600 text-[11px]">
+              <span>ЧИСТ (백지표)</span>
+              <span class="font-mono">${res.branco}표 (${brancoPct}%)</span>
             </div>
           `;
-        } else {
-          // 기타 일반 직책 결과
-          const res = ELECTION_RESULTS[rKey] || { votes: {}, branco: 0, nulo: 0, total: 0 };
-          const cands = CANDIDATES_DB[rKey] || {};
 
+          const nuloPct = ((res.nulo / res.total) * 100).toFixed(1);
           html += `
-            <div class="border border-stone-200 rounded-xl p-3.5 bg-stone-50">
-              <div class="flex justify-between items-center border-b border-stone-200 pb-2 mb-2">
-                <span class="font-black text-stone-800 text-sm">${rName}</span>
-                <span class="text-xs font-bold bg-stone-200 px-2 py-0.5 rounded text-stone-700 font-mono">총: ${res.total}표</span>
-              </div>
-              
-              <div class="space-y-1.5 text-xs">
-          `;
-
-          if (res.total === 0) {
-            html += `<div class="text-stone-400 py-1 text-center">아직 투표된 기록이 없습니다.</div>`;
-          } else {
-            Object.keys(cands).forEach(num => {
-              const cand = cands[num];
-              const voteCount = res.votes[num] || 0;
-              const pct = res.total > 0 ? ((voteCount / res.total) * 100).toFixed(1) : 0;
-              html += `
-                <div>
-                  <div class="flex justify-between text-stone-700 font-semibold">
-                    <span>[${num}] ${cand.name} (${cand.party})</span>
-                    <span class="font-mono text-emerald-800 font-bold">${voteCount}표 (${pct}%)</span>
-                  </div>
-                  <div class="w-full bg-stone-200 rounded-full h-1.5 mt-1 overflow-hidden">
-                    <div class="bg-emerald-700 h-1.5 rounded-full" style="width: ${pct}%"></div>
-                  </div>
-                </div>
-              `;
-            });
-
-            const brancoPct = ((res.branco / res.total) * 100).toFixed(1);
-            html += `
-              <div class="pt-1 border-t border-stone-200 mt-2">
-                <div class="flex justify-between text-stone-600 font-medium">
-                  <span>ЧИСТЫЙ БЮЛЛЕТЕНЬ (백지표)</span>
-                  <span class="font-mono">${res.branco}표 (${brancoPct}%)</span>
-                </div>
-              </div>
-            `;
-
-            const nuloPct = ((res.nulo / res.total) * 100).toFixed(1);
-            html += `
-              <div>
-                <div class="flex justify-between text-rose-600 font-medium">
-                  <span>НЕДЕЙСТВИТЕЛЬНЫЙ (무효표)</span>
-                  <span class="font-mono">${res.nulo}표 (${nuloPct}%)</span>
-                </div>
-              </div>
-            `;
-          }
-
-          html += `
-              </div>
+            <div class="flex justify-between text-rose-700 text-[11px]">
+              <span>НЕДЕЙСТВИТЕЛЬНЫЙ (무효표)</span>
+              <span class="font-mono">${res.nulo}표 (${nuloPct}%)</span>
             </div>
           `;
         }
+
+        html += `
+            </div>
+          </div>
+        `;
       });
 
       content.innerHTML = html;
@@ -1822,6 +1813,7 @@
         app: "Soviet-Urna-EVM2026",
         sovietLanguage: currentSovietLang,
         republicCode: currentRepublicCode,
+        enabledRoles: enabledRoles,
         exportedAt: new Date().toISOString(),
         candidates: CANDIDATES_DB,
         results: ELECTION_RESULTS
@@ -1829,11 +1821,11 @@
       const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportPackage, null, 2));
       const a = document.createElement('a');
       a.setAttribute("href", dataStr);
-      a.setAttribute("download", `soviet_protokol_${new Date().toISOString().slice(0,10)}.json`);
+      a.setAttribute("download", `soviet_election_results_${new Date().toISOString().slice(0,10)}.json`);
       document.body.appendChild(a);
       a.click();
       a.remove();
-      showToast('개표 결과 JSON 파일이 저장되었습니다.');
+      showToast('개표 결과 JSON 파일이 다운로드되었습니다.');
     });
 
     document.querySelectorAll('[data-key]').forEach(btn => {
@@ -1894,8 +1886,9 @@
       }
     });
 
-    // 초기화 기동
+    // 앱 초기화 기동
     initRepublicSelect();
+    renderStageCheckboxes();
     updateRoleDropdown();
     syncRoleUi();
     renderCandidateList();
